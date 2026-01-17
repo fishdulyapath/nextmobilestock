@@ -1,11 +1,12 @@
 {
-    "name": "mobilestock",
-    "short_name": "mobilestock",
-    "start_url": ".",
+    "name": "NextStep Mobile Stock",
+    "short_name": "MobileStock",
+    "start_url": "/mobilestock/",
+    "scope": "/mobilestock/",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#10B981",
+    "theme_color": "#10B981",
+    "description": "Mobile Stock Management System for NextStep",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

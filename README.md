@@ -15,6 +15,13 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+
+cd d:\flutterProject\2026\nextstepmobilestock
+
+flutter build web --release --base-href /mobilestock/
+
+cp -r build/web/* C:/xampp/htdocs/mobilestock/
+
 CREATE TABLE public.msc_cart
 (
 roworder serial,

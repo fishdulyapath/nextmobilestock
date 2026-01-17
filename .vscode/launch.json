@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "smlmobilestock",
+      "name": "mobilestock",
       "request": "launch",
       "type": "dart"
     },
@@ -21,13 +21,13 @@
     },
 
     {
-      "name": "smlmobilestock (profile mode)",
+      "name": "mobilestock (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "smlmobilestock (release mode)",
+      "name": "mobilestock (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

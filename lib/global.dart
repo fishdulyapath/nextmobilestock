@@ -19,8 +19,8 @@ Future<SharedPreferences> _getPrefs() async {
 }
 
 Future<void> initializeConfig() async {
-  await GetStorage.init("SMLConfig");
-  appStorage = GetStorage("SMLConfig");
+  await GetStorage.init("AppConfig");
+  appStorage = GetStorage("AppConfig");
   _prefs = await SharedPreferences.getInstance();
   await loadConfigFromPrefs();
 }

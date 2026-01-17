@@ -16,9 +16,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
   @override
   void initState() {
     global.loadConfig();
-    _hostController.text = (global.serverHost.isNotEmpty) ? global.serverHost : 'http://demo.smlaccount.com';
-    _providerController.text = (global.serverProvider.isNotEmpty) ? global.serverProvider : 'PRESENT';
-    _dbNameController.text = (global.serverDatabase.isNotEmpty) ? global.serverDatabase : 'DEMO';
+    _hostController.text = (global.serverHost.isNotEmpty) ? global.serverHost : '';
+    _providerController.text = (global.serverProvider.isNotEmpty) ? global.serverProvider : '';
+    _dbNameController.text = (global.serverDatabase.isNotEmpty) ? global.serverDatabase : '';
     super.initState();
   }
 

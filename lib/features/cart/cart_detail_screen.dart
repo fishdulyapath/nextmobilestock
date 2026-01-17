@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+// mobile_scanner removed for web compatibility - barcode input is handled via TextField
 import 'package:mobilestock/features/cart/cart_item_search.dart';
 import 'package:mobilestock/model/cart_model.dart';
 import 'package:mobilestock/model/item_model.dart';
