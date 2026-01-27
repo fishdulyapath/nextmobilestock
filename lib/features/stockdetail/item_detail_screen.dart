@@ -21,9 +21,15 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   final WebServiceRepository _webServiceRepository = WebServiceRepository();
 
   // Price data
-  Map<String, dynamic>? _priceData;
+  List<Map<String, dynamic>> _priceDataList = [];
+  String _selectedUnit = "";
   bool _isLoadingPrice = true;
   String _priceError = '';
+
+  // Unit data
+  List<Map<String, dynamic>> _unitData = [];
+  bool _isLoadingUnit = true;
+  String _unitError = '';
 
   // Stock data
   List<Map<String, dynamic>> _stockData = [];
@@ -35,6 +41,21 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   bool _isLoadingAccrued = true;
   String _accruedError = '';
 
+  // Barcode Price data
+  List<Map<String, dynamic>> _priceBarcodeDataList = [];
+  bool _isLoadingBarcodePrice = true;
+  String _priceBarcodeError = '';
+
+  // Normal Price data
+  List<Map<String, dynamic>> _priceNormalDataList = [];
+  bool _isLoadingNormalPrice = true;
+  String _priceNormalError = '';
+
+  // Standard Price data
+  List<Map<String, dynamic>> _priceStandardDataList = [];
+  bool _isLoadingStandardPrice = true;
+  String _priceStandardError = '';
+
   @override
   void initState() {
     super.initState();
@@ -44,10 +65,37 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Future<void> _loadAllData() async {
     // Load all data in parallel
     await Future.wait([
+      _loadUnitData(),
       _loadPriceData(),
+      _loadPriceStandard(),
+      _loadPriceNormal(),
+      _loadBarcodePrice(),
       _loadStockData(),
       _loadAccruedData(),
     ]);
+  }
+
+  Future<void> _loadUnitData() async {
+    try {
+      final result = await _webServiceRepository.getItemUnit(widget.itemCode);
+      if (result.success && result.data != null) {
+        setState(() {
+          _unitData = List<Map<String, dynamic>>.from(result.data);
+          _selectedUnit = _unitData.isNotEmpty ? _unitData[0]['unit_code'] : "";
+          _isLoadingUnit = false;
+        });
+      } else {
+        setState(() {
+          _unitError = 'ไม่พบข้อมูลหน่วย';
+          _isLoadingUnit = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _unitError = e.toString();
+        _isLoadingUnit = false;
+      });
+    }
   }
 
   Future<void> _loadPriceData() async {
@@ -55,7 +103,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       final result = await _webServiceRepository.getItemPrice(widget.itemCode);
       if (result.success && result.data != null && (result.data as List).isNotEmpty) {
         setState(() {
-          _priceData = (result.data as List).first;
+          _priceDataList = List<Map<String, dynamic>>.from(result.data);
+          // Default to first item
           _isLoadingPrice = false;
         });
       } else {
@@ -68,6 +117,75 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       setState(() {
         _priceError = e.toString();
         _isLoadingPrice = false;
+      });
+    }
+  }
+
+  Future<void> _loadPriceNormal() async {
+    try {
+      final result = await _webServiceRepository.getItemPriceNormal(widget.itemCode);
+      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+        setState(() {
+          _priceNormalDataList = List<Map<String, dynamic>>.from(result.data);
+          // Default to first item
+          _isLoadingNormalPrice = false;
+        });
+      } else {
+        setState(() {
+          _priceNormalError = 'ไม่พบข้อมูลราคา';
+          _isLoadingNormalPrice = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _priceNormalError = e.toString();
+        _isLoadingNormalPrice = false;
+      });
+    }
+  }
+
+  Future<void> _loadPriceStandard() async {
+    try {
+      final result = await _webServiceRepository.getItemPriceStandard(widget.itemCode);
+      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+        setState(() {
+          _priceStandardDataList = List<Map<String, dynamic>>.from(result.data);
+          // Default to first item
+          _isLoadingStandardPrice = false;
+        });
+      } else {
+        setState(() {
+          _priceStandardError = 'ไม่พบข้อมูลราคา';
+          _isLoadingStandardPrice = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _priceStandardError = e.toString();
+        _isLoadingStandardPrice = false;
+      });
+    }
+  }
+
+  Future<void> _loadBarcodePrice() async {
+    try {
+      final result = await _webServiceRepository.getItemBarcodePrice(widget.itemCode);
+      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+        setState(() {
+          _priceBarcodeDataList = List<Map<String, dynamic>>.from(result.data);
+          // Default to first item
+          _isLoadingBarcodePrice = false;
+        });
+      } else {
+        setState(() {
+          _priceBarcodeError = 'ไม่พบข้อมูลราคา';
+          _isLoadingBarcodePrice = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _priceBarcodeError = e.toString();
+        _isLoadingBarcodePrice = false;
       });
     }
   }
@@ -204,10 +322,10 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     color: Color(0xFF1E293B),
                   ),
                 ),
-                if (_priceData != null && _priceData!['unit_code'] != null) ...[
+                if (_unitData.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'หน่วย: ${_priceData!['unit_code']}',
+                    'หน่วย: ${_unitData.firstWhere((item) => item['unit_code'] == _selectedUnit)['unit_code']}',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey.shade600,
@@ -224,7 +342,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Widget _buildPriceSection() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -247,9 +365,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   color: Color(0xFF1E293B),
                 ),
               ),
+              const Spacer(),
+              // Unit selector dropdown
+              if (_unitData.length > 1 && !_isLoadingUnit) _buildUnitSelector(),
             ],
           ),
           const SizedBox(height: 12),
+          // ราคาตามสูตร
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -276,78 +398,474 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       )
                     : _buildPriceTable(),
           ),
+          const SizedBox(height: 12),
+          // ราคาตามมาตรฐาน
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: _isLoadingStandardPrice
+                ? const Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                  )
+                : _priceStandardError.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Center(
+                          child: Text(_priceStandardError, style: TextStyle(color: Colors.grey.shade500)),
+                        ),
+                      )
+                    : _buildPriceStandardTable(),
+          ),
+          const SizedBox(height: 12),
+          // ราคาทั่วไป
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: _isLoadingNormalPrice
+                ? const Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                  )
+                : _priceNormalError.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Center(
+                          child: Text(_priceNormalError, style: TextStyle(color: Colors.grey.shade500)),
+                        ),
+                      )
+                    : _buildPriceNormalTable(),
+          ),
+          const SizedBox(height: 12),
+          //ราคาตามบาร์โค้ด
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.08),
+                  blurRadius: 15,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: _isLoadingBarcodePrice
+                ? const Padding(
+                    padding: EdgeInsets.all(30),
+                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                  )
+                : _priceBarcodeError.isNotEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Center(
+                          child: Text(_priceBarcodeError, style: TextStyle(color: Colors.grey.shade500)),
+                        ),
+                      )
+                    : _buildBarcodePriceTable(),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildPriceTable() {
-    if (_priceData == null) {
-      return const Padding(
+  Widget _buildUnitSelector() {
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF10B981).withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: _selectedUnit,
+          isDense: true,
+          icon: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Icon(
+              Icons.arrow_drop_down,
+              color: Color(0xFF10B981),
+              size: 18,
+            ),
+          ),
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1E293B),
+            letterSpacing: 0.2,
+          ),
+          dropdownColor: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          elevation: 8,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          items: _unitData.asMap().entries.map((entry) {
+            final index = entry.key;
+            final unitData = entry.value;
+            final unitCode = unitData['unit_code'] ?? '-';
+            final isSelected = unitCode == _selectedUnit;
+
+            return DropdownMenuItem<String>(
+              value: unitCode,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Colors.grey.shade200,
+                      width: index < _unitData.length - 1 ? 1 : 0,
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      unitCode,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: (String? newIndex) {
+            if (newIndex != null) {
+              setState(() {
+                _selectedUnit = newIndex;
+              });
+            }
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBarcodePriceTable() {
+    if (_priceBarcodeDataList.isEmpty) {
+      return Padding(
         padding: EdgeInsets.all(20),
-        child: Center(child: Text('ไม่พบข้อมูลราคา')),
+        child: Container(),
       );
     }
 
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Average Cost
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFEF3C7),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.trending_up, color: Color(0xFFD97706), size: 20),
-                const SizedBox(width: 8),
-                const Text(
-                  'ราคาทุนเฉลี่ย: ',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF92400E),
-                  ),
-                ),
-                Text(
-                  _formatPrice(_priceData!['average_cost']),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF92400E),
-                  ),
-                ),
-              ],
+          const Text(
+            'ราคาตามบาร์โค้ด',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          ..._priceBarcodeDataList.map((selectedPrice) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildHeaderCell(selectedPrice['barcode'] ?? ''),
+                        _buildHeaderCell(selectedPrice['unit_code'] ?? ''),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        _buildPriceCell('ราคา1', selectedPrice['price'] ?? '0'),
+                        _buildPriceCell('ราคา2', selectedPrice['price_2'] ?? '0'),
+                        _buildPriceCell('ราคา3', selectedPrice['price_3'] ?? '0'),
+                        _buildPriceCell('ราคา4', selectedPrice['price_4'] ?? '0'),
+                      ],
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceStandardTable() {
+    if (_priceStandardDataList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(),
+      );
+    }
+
+    final selectedPrice = _priceStandardDataList.where(
+      (price) => price['unit_code'] == _selectedUnit,
+    );
+
+    if (selectedPrice.isEmpty) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ราคามาตรฐาน',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...selectedPrice.map((selectedPrice) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTextCell('จากวันที่', selectedPrice['from_date'] ?? ''),
+                        _buildTextCell('ถึงวันที่', selectedPrice['to_date'] ?? ''),
+                        _buildTextCell('จากจำนวน', selectedPrice['from_qty'] ?? ''),
+                        _buildTextCell('ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
+                        _buildTextCell('ลูกค้า', selectedPrice['cust_code'] ?? ''),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTextCell('CustGroup1', selectedPrice['cust_group_1'] ?? ''),
+                        _buildTextCell('CustGroup2', selectedPrice['cust_group_2'] ?? ''),
+                        _buildTextCell('SaleType', selectedPrice['sale_type'] ?? ''),
+                        _buildTextCell('PriceType', selectedPrice['price_type'] ?? ''),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        _buildPriceCell('ราคา1', selectedPrice['sale_price1'] ?? '0'),
+                        _buildPriceCell('ราคา2', selectedPrice['sale_price2'] ?? '0'),
+                      ],
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceNormalTable() {
+    if (_priceNormalDataList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(),
+      );
+    }
+
+    final selectedPrice = _priceNormalDataList.where(
+      (price) => price['unit_code'] == _selectedUnit,
+    );
+
+    if (selectedPrice.isEmpty) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ราคาทั่วไป',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...selectedPrice.map((selectedPrice) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.grey.shade200),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTextCell('จากวันที่', selectedPrice['from_date'] ?? ''),
+                        _buildTextCell('ถึงวันที่', selectedPrice['to_date'] ?? ''),
+                        _buildTextCell('จากจำนวน', selectedPrice['from_qty'] ?? ''),
+                        _buildTextCell('ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
+                        _buildTextCell('ลูกค้า', selectedPrice['cust_code'] ?? ''),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildTextCell('CustGroup1', selectedPrice['cust_group_1'] ?? ''),
+                        _buildTextCell('CustGroup2', selectedPrice['cust_group_2'] ?? ''),
+                        _buildTextCell('SaleType', selectedPrice['sale_type'] ?? ''),
+                        _buildTextCell('PriceType', selectedPrice['price_type'] ?? ''),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        _buildPriceCell('ราคา1', selectedPrice['sale_price1'] ?? '0'),
+                        _buildPriceCell('ราคา2', selectedPrice['sale_price2'] ?? '0'),
+                      ],
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriceTable() {
+    if (_priceDataList.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.all(20),
+        child: Container(),
+      );
+    }
+
+    final selectedPrice = _priceDataList.firstWhere(
+      (price) => price['unit_code'] == _selectedUnit,
+      orElse: () => {},
+    );
+
+    if (selectedPrice.isEmpty) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ราคาตามสูตร',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 6),
           // Price Row 1 (0-4)
           Row(
             children: [
-              _buildPriceCell('ราคา 0', _priceData!['price_0']),
-              _buildPriceCell('ราคา 1', _priceData!['price_1']),
-              _buildPriceCell('ราคา 2', _priceData!['price_2']),
-              _buildPriceCell('ราคา 3', _priceData!['price_3']),
-              _buildPriceCell('ราคา 4', _priceData!['price_4']),
+              _buildPriceCell('ราคา 0', selectedPrice['price_0'] ?? '0'),
+              _buildPriceCell('ราคา 1', selectedPrice['price_1'] ?? '0'),
+              _buildPriceCell('ราคา 2', selectedPrice['price_2'] ?? '0'),
+              _buildPriceCell('ราคา 3', selectedPrice['price_3'] ?? '0'),
+              _buildPriceCell('ราคา 4', selectedPrice['price_4'] ?? '0'),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 3),
           // Price Row 2 (5-9)
           Row(
             children: [
-              _buildPriceCell('ราคา 5', _priceData!['price_5']),
-              _buildPriceCell('ราคา 6', _priceData!['price_6']),
-              _buildPriceCell('ราคา 7', _priceData!['price_7']),
-              _buildPriceCell('ราคา 8', _priceData!['price_8']),
-              _buildPriceCell('ราคา 9', _priceData!['price_9']),
+              _buildPriceCell('ราคา 5', selectedPrice['price_5'] ?? '0'),
+              _buildPriceCell('ราคา 6', selectedPrice['price_6'] ?? '0'),
+              _buildPriceCell('ราคา 7', selectedPrice['price_7'] ?? '0'),
+              _buildPriceCell('ราคา 8', selectedPrice['price_8'] ?? '0'),
+              _buildPriceCell('ราคา 9', selectedPrice['price_9'] ?? '0'),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTextCell(String label, dynamic text) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B82F6).withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.1)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              text,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -374,6 +892,32 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             const SizedBox(height: 2),
             Text(
               _formatPrice(price),
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E293B),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderCell(String label) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: const Color(0xFF3B82F6).withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFF3B82F6).withOpacity(0.1)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              label,
               style: const TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,

@@ -795,6 +795,28 @@ class WebServiceRepository {
     }
   }
 
+  // ดึงหน่วยนับ
+  Future<ApiResponse> getItemUnit(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getItemUnit?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
   // ดึงราคาสินค้า
   Future<ApiResponse> getItemPrice(String itemCode) async {
     global.loadConfig();
@@ -802,6 +824,69 @@ class WebServiceRepository {
 
     try {
       final response = await client.get('/getItemPrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getItemBarcodePrice(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getItemBarcodePrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getItemPriceNormal(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getItemPriceNormal?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getItemPriceStandard(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getItemPriceStandard?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {

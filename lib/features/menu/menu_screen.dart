@@ -206,11 +206,11 @@ class _MenuScreenState extends State<MenuScreen> {
               const SizedBox(height: 16), // Menu Items - Grid Layout (Responsive)
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
                       // ขนาดคงที่ของ card
-                      const double maxCardSize = 160.0;
+                      const double maxCardSize = 150.0;
 
                       return Container(
                         child: Wrap(
