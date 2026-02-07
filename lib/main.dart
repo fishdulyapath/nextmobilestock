@@ -6,6 +6,7 @@ import 'package:mobilestock/core/service_locator.dart';
 
 import 'package:mobilestock/features/cart/cart_list_screen.dart';
 import 'package:mobilestock/features/config/config_screen.dart';
+import 'package:mobilestock/features/handheld/handheld_list_screen.dart';
 import 'package:mobilestock/features/login/login_screen.dart';
 import 'package:mobilestock/features/menu/menu_screen.dart';
 import 'package:mobilestock/features/requesttransfer/request_cart_list_screen.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
             '/stockdetail': (context) => const StockDetailScreen(),
             '/requestcartlist': (context) => const RequestCartListScreen(),
             '/transfercartlist': (context) => const TransferCartListScreen(),
+            '/handheldcartlist': (context) => const HandheldListScreen(),
           }),
     );
   }

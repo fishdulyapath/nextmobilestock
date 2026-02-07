@@ -291,6 +291,74 @@ class WebServiceRepository {
     }
   }
 
+  Future<ApiResponse> approveSaveHandHeld(CartModel cart) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      // ดึงรายละเอียดสินค้าในตะกร้า
+      final cartDetailResponse = await getCartDetail(cart.docno);
+      if (!cartDetailResponse.success) {
+        throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
+      }
+
+      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+
+      // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
+      final now = DateTime.now();
+      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      final docref = 'MHL${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final payload = {
+        'docno': cart.docno,
+        'docref': docref,
+        'branchcode': global.branchCode, 'whcode': cart.whcode,
+        'locationcode': cart.locationcode,
+        'remark': cart.remark,
+        'usercode': global.userCode,
+        'docdate': cart.docdate,
+        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'details': cartDetails.map((detail) {
+          return {
+            'item_code': detail.itemcode,
+            'item_name': detail.itemname,
+            'unit_code': detail.unitcode,
+            'qty': detail.qty.toString(),
+            'location': detail.locationcode,
+          };
+        }).toList(),
+      };
+      final response = await client.post(
+        '/approveSaveHandHeld?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=${cart.docno}',
+        data: payload,
+        options: Options(
+          contentType: Headers.jsonContentType,
+        ),
+      );
+
+      final rawData = json.decode(response.toString());
+
+      // ตรวจสอบ response format ใหม่
+      if (rawData['success'] == true) {
+        // สำเร็จ - ใช้ docref จาก response หรือที่ gen ขึ้นมา
+        return ApiResponse(
+          success: true,
+          message: '',
+          data: {'docref': rawData['docref'] ?? docref},
+        );
+      } else {
+        // error - return error message
+        return ApiResponse(
+          success: false,
+          message: rawData['error'] ?? 'เกิดข้อผิดพลาดในการบันทึก',
+          data: null,
+        );
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
   Future<ApiResponse> SaveReceive(CartModel cart) async {
     global.loadConfig();
     Dio client = Client().init();

@@ -220,6 +220,16 @@ class _MenuScreenState extends State<MenuScreen> {
                           children: [
                             _buildGridMenuCard(
                               icon: Icons.move_to_inbox_outlined,
+                              title: 'แฮนเฮลด์',
+                              subtitle: 'ตะกร้าสินค้า',
+                              color: Colors.purple,
+                              maxSize: maxCardSize,
+                              onTap: () {
+                                Navigator.of(context).pushNamed('/handheldcartlist');
+                              },
+                            ),
+                            _buildGridMenuCard(
+                              icon: Icons.move_to_inbox_outlined,
                               title: 'ขอโอน',
                               subtitle: 'ขอโอนสินค้า',
                               color: const Color(0xFF3B82F6),
