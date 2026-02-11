@@ -301,9 +301,13 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: cardColor,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: showCheckbox && checked[index] ? Border.all(color: const Color(0xFF10B981), width: 2) : Border.all(color: Colors.grey.shade200),
+        border: cart.status == 5
+            ? Border.all(color: Colors.orange, width: 2)
+            : showCheckbox && checked[index]
+                ? Border.all(color: const Color(0xFF10B981), width: 2)
+                : Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.08),
@@ -317,7 +321,7 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: showCheckbox
+          onTap: cart.status != 5 && showCheckbox
               ? () {
                   setState(() {
                     checked[index] = !checked[index];
@@ -333,18 +337,19 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
                 Row(
                   children: [
                     if (showCheckbox) ...[
-                      Checkbox(
-                        value: checked[index],
-                        onChanged: (value) {
-                          setState(() {
-                            checked[index] = value!;
-                          });
-                        },
-                        activeColor: const Color(0xFF10B981),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
+                      if (cart.status != 5)
+                        Checkbox(
+                          value: checked[index],
+                          onChanged: (value) {
+                            setState(() {
+                              checked[index] = value!;
+                            });
+                          },
+                          activeColor: const Color(0xFF10B981),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
                         ),
-                      ),
                       const SizedBox(width: 6),
                     ],
                     Container(
@@ -353,7 +358,7 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
                         color: accentColor.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(statusIcon, color: accentColor, size: 20),
+                      child: Icon(statusIcon, color: Colors.orange, size: 20),
                     ),
                     const SizedBox(width: 5),
                     Expanded(
@@ -373,24 +378,24 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              // if (hasSubCarts && !isMerged) ...[
-                              //   const SizedBox(width: 8),
-                              //   Container(
-                              //     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              //     decoration: BoxDecoration(
-                              //       color: accentColor.withOpacity(0.1),
-                              //       borderRadius: BorderRadius.circular(6),
-                              //     ),
-                              //     child: Text(
-                              //       statusText,
-                              //       style: TextStyle(
-                              //         fontSize: 10,
-                              //         fontWeight: FontWeight.w600,
-                              //         color: accentColor,
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ],
+                              if (cart.status == 5) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: accentColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: const Text(
+                                    "ส่งแล้ว",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.orange,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                           const SizedBox(height: 4),
@@ -443,6 +448,15 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
                   const SizedBox(height: 8),
                   _buildDetailRow(Icons.note_outlined, 'หมายเหตุ', cart.remark),
                 ],
+                if (cart.status == 5) ...[
+                  const SizedBox(height: 8),
+                  _buildDetailRow(Icons.person_outline, 'ผู้ส่ง', cart.approvecode),
+                ],
+                //วันที่เวลาส่ง
+                if (cart.status == 5) ...[
+                  const SizedBox(height: 8),
+                  _buildDetailRow(Icons.schedule_outlined, 'วันที่ส่ง', '${cart.approvedatetime.split(' ')[0]} เวลา ${cart.approvedatetime.split(' ').length > 1 ? cart.approvedatetime.split(' ')[1].substring(0, 5) : ''}'),
+                ],
 
                 // แสดงตะกร้าย่อย (ถ้าเป็นตะกร้ารวม)
                 if (cart.carts.isNotEmpty) ...[
@@ -459,63 +473,83 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
                     runSpacing: 8,
                     children: [
                       if (!isMerged) ...[
-                        _buildIconButton(
-                          icon: Icons.send_outlined,
-                          color: const Color(0xFF10B981),
-                          tooltip: 'ส่ง',
-                          onPressed: () {
-                            if (cart.itemcount > 0) {
-                              _showConfirmSendDialog(context, cart);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("ไม่มีสินค้าในตะกร้า"),
-                                  backgroundColor: Colors.red,
+                        if (cart.status != 5)
+                          _buildIconButton(
+                            icon: Icons.send_outlined,
+                            color: const Color(0xFF10B981),
+                            tooltip: 'ส่ง',
+                            onPressed: () {
+                              if (cart.itemcount > 0) {
+                                _showConfirmSendDialog(context, cart);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("ไม่มีสินค้าในตะกร้า"),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                        if (cart.status != 5)
+                          _buildIconButton(
+                            icon: Icons.edit_outlined,
+                            color: const Color(0xFFF59E0B),
+                            tooltip: 'แก้ไข',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TransferCartFormScreen(cart: cart),
                                 ),
-                              );
-                            }
-                          },
-                        ),
+                              ).then((value) {
+                                getCartList();
+                              });
+                            },
+                          ),
+                      ],
+                      if (cart.status != 5)
                         _buildIconButton(
-                          icon: Icons.edit_outlined,
-                          color: const Color(0xFFF59E0B),
-                          tooltip: 'แก้ไข',
+                          icon: Icons.qr_code_scanner_outlined,
+                          color: const Color(0xFF3B82F6),
+                          tooltip: 'สแกน',
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TransferCartFormScreen(cart: cart),
+                                builder: (context) => TransferCartDetailScreen(cart: cart, ismerge: cart.ismerge),
                               ),
                             ).then((value) {
                               getCartList();
                             });
                           },
                         ),
-                      ],
-                      _buildIconButton(
-                        icon: Icons.qr_code_scanner_outlined,
-                        color: const Color(0xFF3B82F6),
-                        tooltip: 'สแกน',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TransferCartDetailScreen(cart: cart, ismerge: cart.ismerge),
-                            ),
-                          ).then((value) {
-                            getCartList();
-                          });
-                        },
-                      ),
-                      if (!isMerged) ...[
+                      if (cart.status == 5)
                         _buildIconButton(
-                          icon: Icons.delete_outline,
-                          color: const Color(0xFFEF4444),
-                          tooltip: 'ลบ',
+                          icon: Icons.qr_code_scanner_outlined,
+                          color: const Color(0xFF3B82F6),
+                          tooltip: 'รายละเอียด',
                           onPressed: () {
-                            _showConfirmationDialog(context, cart.docno);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TransferCartDetailScreen(cart: cart, ismerge: cart.ismerge),
+                              ),
+                            ).then((value) {
+                              getCartList();
+                            });
                           },
                         ),
+                      if (!isMerged) ...[
+                        if (cart.status != 5)
+                          _buildIconButton(
+                            icon: Icons.delete_outline,
+                            color: const Color(0xFFEF4444),
+                            tooltip: 'ลบ',
+                            onPressed: () {
+                              _showConfirmationDialog(context, cart.docno);
+                            },
+                          ),
                       ],
                     ],
                   ),

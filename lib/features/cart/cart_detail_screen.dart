@@ -127,7 +127,7 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
-            if (itemScanList.isNotEmpty) {
+            if (itemScanList.isNotEmpty && widget.cart.status != 5 && widget.ismerge == 0) {
               _showExitConfirmDialog();
             } else {
               Navigator.of(context).pop();
@@ -296,58 +296,59 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
             ),
           ),
           if (widget.ismerge == 0)
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        onSubmitted: (value) => getItemDetail(),
-                        focusNode: textfocusNode,
-                        controller: _controller,
-                        decoration: InputDecoration(
-                          hintText: 'สแกนหรือพิมพ์บาร์โค้ด...',
-                          hintStyle: TextStyle(color: Colors.grey.shade400),
-                          border: InputBorder.none,
-                          prefixIcon: Icon(Icons.qr_code_scanner, color: Colors.grey.shade400),
+            if (widget.cart.status != 5)
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade200),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          onSubmitted: (value) => getItemDetail(),
+                          focusNode: textfocusNode,
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: 'สแกนหรือพิมพ์บาร์โค้ด...',
+                            hintStyle: TextStyle(color: Colors.grey.shade400),
+                            border: InputBorder.none,
+                            prefixIcon: Icon(Icons.qr_code_scanner, color: Colors.grey.shade400),
+                          ),
                         ),
                       ),
-                    ),
-                    _buildActionButton(
-                      icon: Icons.search,
-                      color: const Color(0xFF3B82F6),
-                      onTap: () async {
-                        final res = await Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const CartItemSearch()),
-                        );
-                        if (res != null) {
-                          ItemModel item = res as ItemModel;
-                          setState(() {
-                            _controller.text += item.barcode;
-                            getItemDetail();
-                          });
-                        }
-                      },
-                    ),
-                  ],
+                      _buildActionButton(
+                        icon: Icons.search,
+                        color: const Color(0xFF3B82F6),
+                        onTap: () async {
+                          final res = await Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CartItemSearch()),
+                          );
+                          if (res != null) {
+                            ItemModel item = res as ItemModel;
+                            setState(() {
+                              _controller.text += item.barcode;
+                              getItemDetail();
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
           if (itemScanList.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -391,59 +392,60 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
                   ),
           ),
           if (widget.ismerge == 0)
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: SafeArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 0,
+            if (widget.cart.status != 5)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, -2),
                     ),
-                    onPressed: itemScanList.isEmpty ? null : _showConfirmSaveDialog,
-                    child: _isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.save_outlined, color: Colors.white),
-                              SizedBox(width: 10),
-                              Text(
-                                'บันทึกรายการ',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
-                                ),
+                  ],
+                ),
+                child: SafeArea(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF10B981),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        elevation: 0,
+                      ),
+                      onPressed: itemScanList.isEmpty ? null : _showConfirmSaveDialog,
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
                               ),
-                            ],
-                          ),
+                            )
+                          : const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.save_outlined, color: Colors.white),
+                                SizedBox(width: 10),
+                                Text(
+                                  'บันทึกรายการ',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
               ),
-            ),
         ],
       ),
     );
@@ -607,7 +609,7 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
             ), // Quantity - Tap to edit
             if (widget.ismerge == 0)
               GestureDetector(
-                onTap: () => _showEditQuantityDialog(index),
+                onTap: () => widget.cart.status == 0 ? _showEditQuantityDialog(index) : null,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
@@ -626,12 +628,14 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
                           color: Color(0xFF10B981),
                         ),
                       ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.edit_outlined,
-                        size: 14,
-                        color: Color(0xFF10B981),
-                      ),
+                      if (widget.cart.status != 5) ...[
+                        const SizedBox(width: 4),
+                        const Icon(
+                          Icons.edit_outlined,
+                          size: 14,
+                          color: Color(0xFF10B981),
+                        ),
+                      ]
                     ],
                   ),
                 ),
@@ -654,19 +658,20 @@ class _CartDetailScreenState extends State<CartDetailScreen> {
                 ),
               ),
             if (widget.ismerge == 0)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: IconButton(
-                  onPressed: () => _showConfirmDialog(index),
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red.shade400,
-                  ),
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.red.shade50,
+              if (widget.cart.status != 5)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: IconButton(
+                    onPressed: () => _showConfirmDialog(index),
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: Colors.red.shade400,
+                    ),
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.red.shade50,
+                    ),
                   ),
                 ),
-              ),
           ],
         ),
       ),
