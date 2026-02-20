@@ -268,6 +268,16 @@ class _MenuScreenState extends State<MenuScreen> {
                                 Navigator.of(context).pushNamed('/stockdetail');
                               },
                             ),
+                            _buildGridMenuCard(
+                              icon: Icons.qr_code_scanner,
+                              title: 'บาร์โค้ด',
+                              subtitle: 'จัดการบาร์โค้ด',
+                              color: const Color(0xFF6366F1),
+                              maxSize: maxCardSize,
+                              onTap: () {
+                                Navigator.of(context).pushNamed('/barcodemanage');
+                              },
+                            ),
                           ],
                         ),
                       );

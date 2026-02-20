@@ -993,6 +993,168 @@ class WebServiceRepository {
     }
   }
 
+  // ดึงรายการสินค้า (Inventory Master)
+  Future<ApiResponse> getInventoryMaster(String search) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getInventoryMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  // ดึงบาร์โค้ดของสินค้า
+  Future<ApiResponse> getBarcodeMaster(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getBarcodeMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  // ตรวจสอบบาร์โค้ดซ้ำ
+  Future<ApiResponse> checkBarcodeExists(String barcode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/checkBarcodeExists?provider=${global.serverProvider}&dbname=${global.serverDatabase}&barcode=$barcode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse(success: rawData['success'] ?? false, message: '', data: rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  // ดึงหน่วยนับ (Unit Master)
+  Future<ApiResponse> getUnitMaster(String itemCode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getUnitMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  // แก้ไขบาร์โค้ด
+  Future<ApiResponse> updateBarcode({
+    required String barcode,
+    required String price,
+    required String priceMember,
+  }) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.post(
+        '/updateBarcode?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+        data: {
+          'barcode': barcode,
+          'price': price,
+          'price_member': priceMember,
+        },
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  // สร้างบาร์โค้ดใหม่
+  Future<ApiResponse> createNewBarcode({
+    required String itemCode,
+    required String itemName,
+    required String barcode,
+    required String unitCode,
+    required String price,
+    required String priceMember,
+  }) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.post(
+        '/createNewBarcode?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+        data: {
+          'item_code': itemCode,
+          'item_name': itemName,
+          'barcode': barcode,
+          'unit_code': unitCode,
+          'price': price,
+          'price_member': priceMember,
+        },
+        options: Options(contentType: Headers.jsonContentType),
+      );
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
   // ดึงข้อมูลค้างรับ/ค้างจอง/ค้างส่ง
   Future<ApiResponse> getAccrued(String itemCode) async {
     global.loadConfig();
