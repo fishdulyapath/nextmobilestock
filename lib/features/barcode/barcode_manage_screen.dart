@@ -175,37 +175,37 @@ class _BarcodeManageScreenState extends State<BarcodeManageScreen> {
             ),
           ),
 
-          // Inventory search results
+          // Inventory search results (full screen when searching)
           if (_inventoryList.isNotEmpty)
-            Container(
-              constraints: const BoxConstraints(maxHeight: 280),
-              color: Colors.white,
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: _inventoryList.length,
-                separatorBuilder: (_, __) => const Divider(height: 1, indent: 16, endIndent: 16),
-                itemBuilder: (context, index) {
-                  final item = _inventoryList[index];
-                  return ListTile(
-                    dense: true,
-                    leading: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Container(
+                color: Colors.white,
+                child: ListView.separated(
+                  itemCount: _inventoryList.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1, indent: 16, endIndent: 16),
+                  itemBuilder: (context, index) {
+                    final item = _inventoryList[index];
+                    return ListTile(
+                      dense: true,
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.inventory_2_outlined, color: Color(0xFF6366F1), size: 18),
                       ),
-                      child: const Icon(Icons.inventory_2_outlined, color: Color(0xFF6366F1), size: 18),
-                    ),
-                    title: Text(item['item_name'] ?? '', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-                    subtitle: Text(item['item_code'] ?? '', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                    onTap: () => _selectItem(item),
-                  );
-                },
+                      title: Text(item['item_name'] ?? '', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                      subtitle: Text(item['item_code'] ?? '', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                      onTap: () => _selectItem(item),
+                    );
+                  },
+                ),
               ),
             ),
 
-          // Selected Item Card
-          if (_selectedItem != null)
+          // Selected Item Card (hidden while showing search results)
+          if (_inventoryList.isEmpty && _selectedItem != null)
             Container(
               margin: const EdgeInsets.all(12),
               padding: const EdgeInsets.all(14),
@@ -257,7 +257,7 @@ class _BarcodeManageScreenState extends State<BarcodeManageScreen> {
             ),
 
           // Barcode List Header
-          if (_selectedItem != null)
+          if (_inventoryList.isEmpty && _selectedItem != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
@@ -283,81 +283,82 @@ class _BarcodeManageScreenState extends State<BarcodeManageScreen> {
             ),
 
           // Barcode List
-          Expanded(
-            child: _selectedItem == null
-                ? _buildEmptyState()
-                : _isLoadingBarcodes
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
-                    : _barcodeList.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.qr_code_2, size: 64, color: Colors.grey.shade300),
-                                const SizedBox(height: 12),
-                                Text('ยังไม่มีบาร์โค้ด', style: TextStyle(color: Colors.grey.shade500)),
-                              ],
+          if (_inventoryList.isEmpty)
+            Expanded(
+              child: _selectedItem == null
+                  ? _buildEmptyState()
+                  : _isLoadingBarcodes
+                      ? const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
+                      : _barcodeList.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.qr_code_2, size: 64, color: Colors.grey.shade300),
+                                  const SizedBox(height: 12),
+                                  Text('ยังไม่มีบาร์โค้ด', style: TextStyle(color: Colors.grey.shade500)),
+                                ],
+                              ),
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              itemCount: _barcodeList.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 8),
+                              itemBuilder: (context, index) {
+                                final bc = _barcodeList[index];
+                                return Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.grey.shade200),
+                                    boxShadow: [
+                                      BoxShadow(color: Colors.grey.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2)),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: const Icon(Icons.qr_code, color: Color(0xFF10B981), size: 22),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              bc['barcode'] ?? '-',
+                                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Wrap(
+                                              spacing: 6,
+                                              runSpacing: 4,
+                                              children: [
+                                                _chip('หน่วย: ${bc['unit_code'] ?? '-'}', const Color(0xFF3B82F6)),
+                                                _chip('ราคา: ${bc['price'] ?? '-'}', const Color(0xFF10B981)),
+                                                _chip('สมาชิก: ${bc['price_member'] ?? '-'}', const Color(0xFFF59E0B)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () => _showEditBarcodeDialog(bc),
+                                        icon: const Icon(Icons.edit_outlined, color: Color(0xFF6366F1), size: 20),
+                                        tooltip: 'แก้ไข',
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          )
-                        : ListView.separated(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            itemCount: _barcodeList.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 8),
-                            itemBuilder: (context, index) {
-                              final bc = _barcodeList[index];
-                              return Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.grey.shade200),
-                                  boxShadow: [
-                                    BoxShadow(color: Colors.grey.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2)),
-                                  ],
-                                ),
-                                child: Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFF10B981).withValues(alpha: 0.1),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(Icons.qr_code, color: Color(0xFF10B981), size: 22),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            bc['barcode'] ?? '-',
-                                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Wrap(
-                                            spacing: 6,
-                                            runSpacing: 4,
-                                            children: [
-                                              _chip('หน่วย: ${bc['unit_code'] ?? '-'}', const Color(0xFF3B82F6)),
-                                              _chip('ราคา: ${bc['price'] ?? '-'}', const Color(0xFF10B981)),
-                                              _chip('สมาชิก: ${bc['price_member'] ?? '-'}', const Color(0xFFF59E0B)),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () => _showEditBarcodeDialog(bc),
-                                      icon: const Icon(Icons.edit_outlined, color: Color(0xFF6366F1), size: 20),
-                                      tooltip: 'แก้ไข',
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-          ),
+            ),
         ],
       ),
     );
@@ -653,6 +654,7 @@ class _AddBarcodeSheetState extends State<_AddBarcodeSheet> {
   final _barcodeController = TextEditingController();
   final _priceController = TextEditingController();
   final _priceMemberController = TextEditingController();
+  final _barcodeFocusNode = FocusNode();
 
   bool _isCheckingBarcode = false;
   bool _barcodeValid = false;
@@ -667,6 +669,9 @@ class _AddBarcodeSheetState extends State<_AddBarcodeSheet> {
   void initState() {
     super.initState();
     _loadUnits();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _barcodeFocusNode.requestFocus();
+    });
   }
 
   Future<void> _loadUnits() async {
@@ -819,6 +824,7 @@ class _AddBarcodeSheetState extends State<_AddBarcodeSheet> {
     _barcodeController.dispose();
     _priceController.dispose();
     _priceMemberController.dispose();
+    _barcodeFocusNode.dispose();
     super.dispose();
   }
 
@@ -876,6 +882,7 @@ class _AddBarcodeSheetState extends State<_AddBarcodeSheet> {
                       Expanded(
                         child: TextField(
                           controller: _barcodeController,
+                          focusNode: _barcodeFocusNode,
                           decoration: InputDecoration(
                             hintText: 'กรอกบาร์โค้ด',
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade300)),
