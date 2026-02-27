@@ -33,7 +33,7 @@ class _CartMergeScreenState extends State<CartMergeScreen> {
   List<LocationModel> locations = [];
   TextEditingController remarkController = TextEditingController();
   bool _isLoading = false;
-  int transFlag = 1;
+  int transFlag = 0;
   // วันที่และเวลา
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();

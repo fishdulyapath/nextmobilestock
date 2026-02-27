@@ -24,196 +24,194 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
-      listener: (context, state) {
-        if (state is AuthenticationLogout) {
-          Navigator.of(context).pushReplacementNamed('/login');
-        }
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
-        body: SafeArea(
-          child: Column(
-            children: [
-              // Header Section
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
+        listener: (context, state) {
+          if (state is AuthenticationLogout) {
+            Navigator.of(context).pushReplacementNamed('/login');
+          }
+        },
+        child: Scaffold(
+          backgroundColor: const Color(0xFFF8FAFC),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Header Section
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    // Logo & Title
-                    Image.asset(
-                      'assets/logo/logonextstep.png',
-                      width: 50,
-                      height: 50,
+                    child: Row(
+                      children: [
+                        // Logo & Title
+                        Image.asset(
+                          'assets/logo/logonextstep.png',
+                          width: 50,
+                          height: 50,
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Stock Management',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1E293B),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Logout Button
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              _showLogoutDialog();
+                            },
+                            icon: Icon(Icons.logout_rounded, color: Colors.red.shade400),
+                            tooltip: 'ออกจากระบบ',
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+
+                  // User Info Card
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF3B82F6).withOpacity(0.1),
+                            const Color(0xFF1D4ED8).withOpacity(0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
                         children: [
-                          Text(
-                            'Stock Management',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF3B82F6).withOpacity(0.2),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.person_outline,
+                              color: Color(0xFF3B82F6),
+                              size: 28,
+                            ),
+                          ),
+                          const SizedBox(width: 13),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      global.branchName.isNotEmpty ? global.branchName : 'ไม่ระบุสาขา',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: _showChangeBranchDialog,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orange.shade50,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(color: Colors.orange.shade200),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.swap_horiz, size: 14, color: Colors.orange.shade700),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'เปลี่ยนสาขา',
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.orange.shade700,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  global.userName.isNotEmpty ? global.userName : 'ผู้ใช้งาน',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF1E293B),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    // Logout Button
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          _showLogoutDialog();
-                        },
-                        icon: Icon(Icons.logout_rounded, color: Colors.red.shade400),
-                        tooltip: 'ออกจากระบบ',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
 
-              // User Info Card
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        const Color(0xFF3B82F6).withOpacity(0.1),
-                        const Color(0xFF1D4ED8).withOpacity(0.05),
+                  // Menu Label
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        Text(
+                          'เมนูหลัก',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF3B82F6).withOpacity(0.2),
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: const Icon(
-                          Icons.person_outline,
-                          color: Color(0xFF3B82F6),
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 13),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  global.branchName.isNotEmpty ? global.branchName : 'ไม่ระบุสาขา',
-                                  style: const TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: _showChangeBranchDialog,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.orange.shade50,
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(color: Colors.orange.shade200),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.swap_horiz, size: 14, color: Colors.orange.shade700),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'เปลี่ยนสาขา',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.orange.shade700,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              global.userName.isNotEmpty ? global.userName : 'ผู้ใช้งาน',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1E293B),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Menu Label
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      'เมนูหลัก',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16), // Menu Items - Grid Layout (Responsive)
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      // ขนาดคงที่ของ card
-                      const double maxCardSize = 150.0;
-
-                      return Container(
-                        child: Wrap(
+                  const SizedBox(height: 16),
+                  // Menu Items - Grid Layout (Responsive)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        const double maxCardSize = 150.0;
+                        return Wrap(
                           spacing: 16,
                           runSpacing: 16,
                           alignment: WrapAlignment.center,
@@ -224,9 +222,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'ตะกร้าสินค้า',
                               color: Colors.purple,
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/handheldcartlist');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/handheldcartlist'),
                             ),
                             _buildGridMenuCard(
                               icon: Icons.move_to_inbox_outlined,
@@ -234,9 +230,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'ขอโอนสินค้า',
                               color: const Color(0xFF3B82F6),
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/requestcartlist');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/requestcartlist'),
                             ),
                             _buildGridMenuCard(
                               icon: Icons.local_shipping_outlined,
@@ -244,9 +238,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'โอนสินค้าออก',
                               color: const Color(0xFFEF4444),
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/transfercartlist');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/transfercartlist'),
                             ),
                             _buildGridMenuCard(
                               icon: Icons.fact_check_outlined,
@@ -254,9 +246,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'ตรวจนับสินค้า',
                               color: const Color(0xFF10B981),
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/cartlist');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/cartlist'),
                             ),
                             _buildGridMenuCard(
                               icon: Icons.inventory_2_outlined,
@@ -264,9 +254,7 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'ตรวจสอบสินค้าคงคลัง',
                               color: const Color(0xFFF59E0B),
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/stockdetail');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/stockdetail'),
                             ),
                             _buildGridMenuCard(
                               icon: Icons.qr_code_scanner,
@@ -274,34 +262,30 @@ class _MenuScreenState extends State<MenuScreen> {
                               subtitle: 'จัดการบาร์โค้ด',
                               color: const Color(0xFF6366F1),
                               maxSize: maxCardSize,
-                              onTap: () {
-                                Navigator.of(context).pushNamed('/barcodemanage');
-                              },
+                              onTap: () => Navigator.of(context).pushNamed('/barcodemanage'),
                             ),
                           ],
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ),
 
-              // Footer
-              Container(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Version 1.0.0',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade400,
+                  // Footer
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      'Version 1.0.0',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade400,
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildGridMenuCard({

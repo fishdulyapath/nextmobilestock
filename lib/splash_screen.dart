@@ -16,22 +16,33 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    // โหลดค่า config จาก SharedPreferences
-    await global.loadConfigFromPrefs();
-
-    // รอ 2 วินาทีแสดง splash
-    await Future.delayed(const Duration(seconds: 2));
+    // main() โหลด initializeConfig() แล้ว ไม่ต้องโหลดซ้ำ
+    // รอแค่ 1 frame ให้ widget build เสร็จก่อน navigate
+    await Future.delayed(const Duration(milliseconds: 300));
 
     _checkLogin();
   }
 
   void _checkLogin() {
-    // เช็คว่ามีข้อมูล user และ config ครบหรือไม่
-    if (global.userCode.isNotEmpty && global.userName.isNotEmpty && global.serverDatabase.isNotEmpty && global.serverProvider.isNotEmpty && global.branchCode.isNotEmpty) {
-      Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
-    } else {
+    final isLoggedIn = global.userCode.isNotEmpty &&
+        global.userName.isNotEmpty &&
+        global.serverDatabase.isNotEmpty &&
+        global.serverProvider.isNotEmpty &&
+        global.branchCode.isNotEmpty;
+
+    if (!isLoggedIn) {
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      return;
     }
+
+    // อ่าน URL ปัจจุบันเพื่อ restore หน้าเดิมบน web
+    final fragment = Uri.base.fragment; // เช่น "/menu", "/barcodemanage"
+    final validRoutes = {
+      '/menu', '/cartlist', '/stockdetail', '/requestcartlist',
+      '/transfercartlist', '/handheldcartlist', '/barcodemanage',
+    };
+    final target = validRoutes.contains(fragment) ? fragment : '/menu';
+    Navigator.of(context).pushNamedAndRemoveUntil(target, (route) => false);
   }
 
   @override
@@ -49,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF3B82F6).withOpacity(0.15),
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
                     blurRadius: 40,
                     offset: const Offset(0, 15),
                   ),
