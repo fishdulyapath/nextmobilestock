@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobilestock/global.dart' as global;
+import 'package:mobilestock/model/permission_model.dart';
+import 'package:mobilestock/repository/webservice_repository.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,10 +22,10 @@ class _SplashScreenState extends State<SplashScreen> {
     // รอแค่ 1 frame ให้ widget build เสร็จก่อน navigate
     await Future.delayed(const Duration(milliseconds: 300));
 
-    _checkLogin();
+    await _checkLogin();
   }
 
-  void _checkLogin() {
+  Future<void> _checkLogin() async {
     final isLoggedIn = global.userCode.isNotEmpty &&
         global.userName.isNotEmpty &&
         global.serverDatabase.isNotEmpty &&
@@ -31,18 +33,44 @@ class _SplashScreenState extends State<SplashScreen> {
         global.branchCode.isNotEmpty;
 
     if (!isLoggedIn) {
-      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
       return;
     }
 
+    // ดึงสิทธิ์ user ก่อน navigate (กรณี refresh หน้า web)
+    await WebServiceRepository().getUserPermissionLogin(global.userCode).then((value) {
+      if (value.success) {
+        final list = value.data as List;
+        if (list.isNotEmpty) {
+          global.setPermissions(PermissionModel.fromJson(list.first));
+        }
+      }
+    }).catchError((_) {});
+
     // อ่าน URL ปัจจุบันเพื่อ restore หน้าเดิมบน web
-    final fragment = Uri.base.fragment; // เช่น "/menu", "/barcodemanage"
+    final fragment = Uri.base.fragment;
     final validRoutes = {
       '/menu', '/cartlist', '/stockdetail', '/requestcartlist',
-      '/transfercartlist', '/handheldcartlist', '/barcodemanage',
+      '/transfercartlist', '/handheldcartlist', '/barcodemanage', '/permission',
     };
     final target = validRoutes.contains(fragment) ? fragment : '/menu';
-    Navigator.of(context).pushNamedAndRemoveUntil(target, (route) => false);
+
+    // ตรวจสอบสิทธิ์ของ route ที่ต้องการเข้า
+    final routePermMap = {
+      '/cartlist': global.permStockList,
+      '/requestcartlist': global.permRequestList,
+      '/transfercartlist': global.permTransferList,
+      '/handheldcartlist': global.permHandheldList,
+      '/barcodemanage': global.permBarcodeList,
+      '/stockdetail': global.permInfoList,
+      '/permission': global.isSuperAdmin,
+    };
+    final hasPermission = routePermMap[target] ?? true;
+    final finalTarget = hasPermission ? target : '/menu';
+
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil(finalTarget, (route) => false);
+    }
   }
 
   @override

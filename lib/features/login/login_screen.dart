@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobilestock/bloc/authentication/authentication_bloc.dart';
 import 'package:mobilestock/global.dart' as global;
+import 'package:mobilestock/model/permission_model.dart';
 import 'package:mobilestock/model/warehouse_location.dart';
 import 'package:mobilestock/repository/webservice_repository.dart';
 
@@ -58,14 +59,14 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void getCartList() async {
+  Future<void> getCartList() async {
     await _webServiceRepository.getBranchList().then((value) {
       if (value.success) {
         final list = (value.data as List).map((data) => WarehouseModel.fromJson(data)).toList();
 
-        // ถ้าไม่มีสาขา หรือมีสาขาเดียว ให้ข้ามไปหน้า menu เลย
+        // ถ้าไม่มีสาขา ให้ดึง permission แล้วไป menu
         if (list.isEmpty) {
-          Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
+          _fetchPermissionAndGoMenu();
           return;
         }
 
@@ -98,12 +99,38 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _fetchPermissionAndGoMenu() async {
+    await _webServiceRepository.getUserPermissionLogin(global.userCode).then((value) {
+      if (value.success) {
+        final data = value.data as List;
+        if (data.isNotEmpty) {
+          global.setPermissions(PermissionModel.fromJson(data.first));
+        }
+      }
+    }).catchError((_) {});
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
+    }
+  }
+
   void _selectBranch(WarehouseModel branch) async {
     await global.saveConfigToPrefs(
       branchcode: branch.code,
       branchname: branch.name,
     );
-    Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
+
+    await _webServiceRepository.getUserPermissionLogin(global.userCode).then((value) {
+      if (value.success) {
+        final list = value.data as List;
+        if (list.isNotEmpty) {
+          global.setPermissions(PermissionModel.fromJson(list.first));
+        }
+      }
+    }).catchError((_) {});
+
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
+    }
   }
 
   void _filterBranches(String query) {

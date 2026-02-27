@@ -13,6 +13,7 @@ import 'package:mobilestock/features/requesttransfer/request_cart_list_screen.da
 import 'package:mobilestock/features/stockdetail/stock_detail_screen.dart';
 import 'package:mobilestock/features/transfer/transfer_cart_list_screen.dart';
 import 'package:mobilestock/features/barcode/barcode_manage_screen.dart';
+import 'package:mobilestock/features/permission/permission_screen.dart';
 import 'package:mobilestock/global.dart';
 import 'package:mobilestock/splash_screen.dart';
 
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
             '/transfercartlist': (context) => const TransferCartListScreen(),
             '/handheldcartlist': (context) => const HandheldListScreen(),
             '/barcodemanage': (context) => const BarcodeManageScreen(),
+            '/permission': (context) => const PermissionScreen(),
           }),
     );
   }

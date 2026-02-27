@@ -139,6 +139,86 @@ class WebServiceRepository {
     }
   }
 
+  Future<ApiResponse> getUserPermissionLogin(String usercode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getErpUserPermissionLogin?provider=${global.serverProvider}&dbname=${global.serverDatabase}&usercode=$usercode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getUserPermissions(String search) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get('/getErpUserPermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> updatePermission({
+    required String usercode,
+    required bool stockList,
+    required bool requestList,
+    required bool transferList,
+    required bool handheldList,
+    required bool barcodeList,
+    required bool infoList,
+  }) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.post(
+        '/upDatePermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}'
+        '&user=$usercode'
+        '&stock_list=${stockList ? 1 : 0}'
+        '&request_list=${requestList ? 1 : 0}'
+        '&transfer_list=${transferList ? 1 : 0}'
+        '&handheld_list=${handheldList ? 1 : 0}'
+        '&barcode_list=${barcodeList ? 1 : 0}'
+        '&info_list=${infoList ? 1 : 0}',
+      );
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
   Future<ApiResponse> getItemSearch(String search) async {
     global.loadConfig();
     Dio client = Client().init();

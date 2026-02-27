@@ -216,54 +216,69 @@ class _MenuScreenState extends State<MenuScreen> {
                           runSpacing: 16,
                           alignment: WrapAlignment.center,
                           children: [
-                            _buildGridMenuCard(
-                              icon: Icons.move_to_inbox_outlined,
-                              title: 'แฮนเฮลด์',
-                              subtitle: 'ตะกร้าสินค้า',
-                              color: Colors.purple,
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/handheldcartlist'),
-                            ),
-                            _buildGridMenuCard(
-                              icon: Icons.move_to_inbox_outlined,
-                              title: 'ขอโอน',
-                              subtitle: 'ขอโอนสินค้า',
-                              color: const Color(0xFF3B82F6),
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/requestcartlist'),
-                            ),
-                            _buildGridMenuCard(
-                              icon: Icons.local_shipping_outlined,
-                              title: 'โอนสินค้า',
-                              subtitle: 'โอนสินค้าออก',
-                              color: const Color(0xFFEF4444),
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/transfercartlist'),
-                            ),
-                            _buildGridMenuCard(
-                              icon: Icons.fact_check_outlined,
-                              title: 'ตรวจนับ',
-                              subtitle: 'ตรวจนับสินค้า',
-                              color: const Color(0xFF10B981),
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/cartlist'),
-                            ),
-                            _buildGridMenuCard(
-                              icon: Icons.inventory_2_outlined,
-                              title: 'ตรวจสอบ',
-                              subtitle: 'ตรวจสอบสินค้าคงคลัง',
-                              color: const Color(0xFFF59E0B),
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/stockdetail'),
-                            ),
-                            _buildGridMenuCard(
-                              icon: Icons.qr_code_scanner,
-                              title: 'บาร์โค้ด',
-                              subtitle: 'จัดการบาร์โค้ด',
-                              color: const Color(0xFF6366F1),
-                              maxSize: maxCardSize,
-                              onTap: () => Navigator.of(context).pushNamed('/barcodemanage'),
-                            ),
+                            if (global.permHandheldList)
+                              _buildGridMenuCard(
+                                icon: Icons.move_to_inbox_outlined,
+                                title: 'แฮนเฮลด์',
+                                subtitle: 'ตะกร้าสินค้า',
+                                color: Colors.purple,
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/handheldcartlist'),
+                              ),
+                            if (global.permRequestList)
+                              _buildGridMenuCard(
+                                icon: Icons.move_to_inbox_outlined,
+                                title: 'ขอโอน',
+                                subtitle: 'ขอโอนสินค้า',
+                                color: const Color(0xFF3B82F6),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/requestcartlist'),
+                              ),
+                            if (global.permTransferList)
+                              _buildGridMenuCard(
+                                icon: Icons.local_shipping_outlined,
+                                title: 'โอนสินค้า',
+                                subtitle: 'โอนสินค้าออก',
+                                color: const Color(0xFFEF4444),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/transfercartlist'),
+                              ),
+                            if (global.permStockList)
+                              _buildGridMenuCard(
+                                icon: Icons.fact_check_outlined,
+                                title: 'ตรวจนับ',
+                                subtitle: 'ตรวจนับสินค้า',
+                                color: const Color(0xFF10B981),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/cartlist'),
+                              ),
+                            if (global.permInfoList)
+                              _buildGridMenuCard(
+                                icon: Icons.inventory_2_outlined,
+                                title: 'ตรวจสอบ',
+                                subtitle: 'ตรวจสอบสินค้าคงคลัง',
+                                color: const Color(0xFFF59E0B),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/stockdetail'),
+                              ),
+                            if (global.permBarcodeList)
+                              _buildGridMenuCard(
+                                icon: Icons.qr_code_scanner,
+                                title: 'บาร์โค้ด',
+                                subtitle: 'จัดการบาร์โค้ด',
+                                color: const Color(0xFF6366F1),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/barcodemanage'),
+                              ),
+                            if (global.isSuperAdmin)
+                              _buildGridMenuCard(
+                                icon: Icons.admin_panel_settings_outlined,
+                                title: 'สิทธิ์ผู้ใช้',
+                                subtitle: 'จัดการสิทธิ์การเข้าถึง',
+                                color: Colors.teal,
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context).pushNamed('/permission'),
+                              ),
                           ],
                         );
                       },

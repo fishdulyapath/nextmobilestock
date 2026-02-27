@@ -1,4 +1,5 @@
 import 'package:get_storage/get_storage.dart';
+import 'package:mobilestock/model/permission_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late GetStorage appStorage;
@@ -11,6 +12,34 @@ String userCode = "";
 String userName = "";
 String branchCode = "";
 String branchName = "";
+
+// Permissions
+bool permStockList = false;
+bool permRequestList = false;
+bool permTransferList = false;
+bool permHandheldList = false;
+bool permBarcodeList = false;
+bool permInfoList = false;
+
+bool get isSuperAdmin => userCode.toLowerCase() == 'superadmin';
+
+void setPermissions(PermissionModel perm) {
+  if (isSuperAdmin) {
+    permStockList = true;
+    permRequestList = true;
+    permTransferList = true;
+    permHandheldList = true;
+    permBarcodeList = true;
+    permInfoList = true;
+  } else {
+    permStockList = perm.stockList;
+    permRequestList = perm.requestList;
+    permTransferList = perm.transferList;
+    permHandheldList = perm.handheldList;
+    permBarcodeList = perm.barcodeList;
+    permInfoList = perm.infoList;
+  }
+}
 
 // ดึง SharedPreferences instance (lazy initialization)
 Future<SharedPreferences> _getPrefs() async {
