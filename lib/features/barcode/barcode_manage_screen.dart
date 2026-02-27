@@ -131,8 +131,18 @@ class _BarcodeManageScreenState extends State<BarcodeManageScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF6366F1),
         foregroundColor: Colors.white,
-        title: const Text('จัดการบาร์โค้ด', style: TextStyle(fontWeight: FontWeight.w600)),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/menu');
+            }
+          },
+        ),
+        title: const Text('จัดการบาร์โค้ด', style: TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: Column(
         children: [

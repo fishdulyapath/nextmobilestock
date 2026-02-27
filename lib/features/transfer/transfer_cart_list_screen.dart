@@ -83,6 +83,16 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
         backgroundColor: Colors.redAccent,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/menu');
+            }
+          },
+        ),
         title: const Text(
           'ตะกร้าโอนสินค้า',
           style: TextStyle(fontWeight: FontWeight.w600),

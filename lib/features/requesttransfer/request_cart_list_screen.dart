@@ -82,6 +82,16 @@ class _RequestCartListScreenState extends State<RequestCartListScreen> {
         backgroundColor: const Color(0xFF3B82F6),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/menu');
+            }
+          },
+        ),
         title: const Text(
           'ตะกร้าขอโอนสินค้า',
           style: TextStyle(fontWeight: FontWeight.w600),

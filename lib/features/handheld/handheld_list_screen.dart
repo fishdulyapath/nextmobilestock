@@ -84,6 +84,16 @@ class _HandheldListScreenState extends State<HandheldListScreen> {
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/menu');
+            }
+          },
+        ),
         title: const Text(
           'ตะกร้าสินค้า (Handheld)',
           style: TextStyle(fontWeight: FontWeight.w600),

@@ -81,6 +81,16 @@ class _CartListScreenState extends State<CartListScreen> {
         backgroundColor: const Color(0xFF10B981),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/menu');
+            }
+          },
+        ),
         title: const Text(
           'ตะกร้าตรวจนับ',
           style: TextStyle(fontWeight: FontWeight.w600),
