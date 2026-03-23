@@ -651,7 +651,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'ราคามาตรฐาน',
+            'ราคาทั่วไป',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -726,7 +726,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'ราคาทั่วไป',
+            'ราคามาตรฐาน',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,

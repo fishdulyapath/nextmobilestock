@@ -15,12 +15,11 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
-
 cd d:\flutterProject\2026\nextstepmobilestock
 
 flutter build web --release --base-href /mobilestock/
 
-cp -r build/web/* C:/xampp/htdocs/mobilestock/
+cp -r build/web/\* C:/xampp/htdocs/mobilestock/
 
 CREATE TABLE public.msc_cart
 (
@@ -117,18 +116,16 @@ line_number integer NOT NULL DEFAULT 0,
 CONSTRAINT msc_cart_sub_detail_pk PRIMARY KEY (roworder)
 );
 
-
-
 CREATE TABLE public.msc_permission
 (
-  roworder serial,
-  user_code character varying(255) NOT NULL,
-  stock_list smallint NOT NULL DEFAULT 0,
-  request_list smallint NOT NULL DEFAULT 0,
-  transfer_list smallint NOT NULL DEFAULT 0,
-  handheld_list  smallint NOT NULL DEFAULT 0,
-  info_list smallint NOT NULL DEFAULT 0,
-  barcode_list smallint NOT NULL DEFAULT 0,
-  create_datetime timestamp without time zone DEFAULT timezone('asia/bangkok'::text, now()),
-  CONSTRAINT msc_permission_pkey PRIMARY KEY (user_code)
+roworder serial,
+user_code character varying(255) NOT NULL,
+stock_list smallint NOT NULL DEFAULT 0,
+request_list smallint NOT NULL DEFAULT 0,
+transfer_list smallint NOT NULL DEFAULT 0,
+handheld_list smallint NOT NULL DEFAULT 0,
+info_list smallint NOT NULL DEFAULT 0,
+barcode_list smallint NOT NULL DEFAULT 0,
+create_datetime timestamp without time zone DEFAULT timezone('asia/bangkok'::text, now()),
+CONSTRAINT msc_permission_pkey PRIMARY KEY (user_code)
 )
