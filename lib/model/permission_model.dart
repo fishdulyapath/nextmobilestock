@@ -6,6 +6,7 @@ class PermissionModel {
   final bool transferList;
   final bool handheldList;
   final bool barcodeList;
+  final bool permissionList;
   final bool infoList;
 
   const PermissionModel({
@@ -17,6 +18,7 @@ class PermissionModel {
     required this.handheldList,
     required this.barcodeList,
     required this.infoList,
+    required this.permissionList,
   });
 
   factory PermissionModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class PermissionModel {
       transferList: json['transfer_list'] == '1',
       handheldList: json['handheld_list'] == '1',
       barcodeList: json['barcode_list'] == '1',
+      permissionList: json['permission_list'] == '1',
       infoList: json['info_list'] == '1',
     );
   }
@@ -39,6 +42,7 @@ class PermissionModel {
     bool? handheldList,
     bool? barcodeList,
     bool? infoList,
+    bool? permissionList,
   }) {
     return PermissionModel(
       code: code,
@@ -49,6 +53,7 @@ class PermissionModel {
       handheldList: handheldList ?? this.handheldList,
       barcodeList: barcodeList ?? this.barcodeList,
       infoList: infoList ?? this.infoList,
+      permissionList: permissionList ?? this.permissionList,
     );
   }
 }

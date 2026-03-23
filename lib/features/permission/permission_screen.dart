@@ -132,6 +132,13 @@ class _PermissionScreenState extends State<PermissionScreen> {
                     value: edited.barcodeList,
                     onChanged: (v) => setStateDialog(() => edited = edited.copyWith(barcodeList: v)),
                   ),
+                  _buildPermissionTile(
+                    label: 'จัดการสิทธิ์ผู้ใช้',
+                    icon: Icons.admin_panel_settings_outlined,
+                    color: const Color(0xFF8B5CF6),
+                    value: edited.permissionList,
+                    onChanged: (v) => setStateDialog(() => edited = edited.copyWith(permissionList: v)),
+                  ),
                 ],
               ),
             ),
@@ -197,7 +204,8 @@ class _PermissionScreenState extends State<PermissionScreen> {
       builder: (_) => const Center(child: CircularProgressIndicator(color: Colors.teal)),
     );
 
-    await _repo.updatePermission(
+    await _repo
+        .updatePermission(
       usercode: perm.code,
       stockList: perm.stockList,
       requestList: perm.requestList,
@@ -205,7 +213,9 @@ class _PermissionScreenState extends State<PermissionScreen> {
       handheldList: perm.handheldList,
       barcodeList: perm.barcodeList,
       infoList: perm.infoList,
-    ).then((value) {
+      permissionList: perm.permissionList,
+    )
+        .then((value) {
       if (mounted) Navigator.of(context).pop();
       if (value.success) {
         // อัพเดท list ในหน้า
@@ -291,9 +301,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   ),
-                  child: _isLoading
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('ค้นหา'),
+                  child: _isLoading ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Text('ค้นหา'),
                 ),
               ],
             ),
@@ -332,8 +340,13 @@ class _PermissionScreenState extends State<PermissionScreen> {
                             itemBuilder: (_, index) {
                               final user = _users[index];
                               final permCount = [
-                                user.handheldList, user.requestList, user.transferList,
-                                user.stockList, user.infoList, user.barcodeList,
+                                user.handheldList,
+                                user.requestList,
+                                user.transferList,
+                                user.stockList,
+                                user.infoList,
+                                user.barcodeList,
+                                user.permissionList,
                               ].where((e) => e).length;
 
                               return Container(
@@ -371,9 +384,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: permCount > 0
-                                              ? Colors.teal.withValues(alpha: 0.1)
-                                              : Colors.grey.shade100,
+                                          color: permCount > 0 ? Colors.teal.withValues(alpha: 0.1) : Colors.grey.shade100,
                                           borderRadius: BorderRadius.circular(12),
                                         ),
                                         child: Text(

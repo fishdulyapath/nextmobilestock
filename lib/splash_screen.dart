@@ -26,11 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLogin() async {
-    final isLoggedIn = global.userCode.isNotEmpty &&
-        global.userName.isNotEmpty &&
-        global.serverDatabase.isNotEmpty &&
-        global.serverProvider.isNotEmpty &&
-        global.branchCode.isNotEmpty;
+    final isLoggedIn = global.userCode.isNotEmpty && global.userName.isNotEmpty && global.serverDatabase.isNotEmpty && global.serverProvider.isNotEmpty && global.branchCode.isNotEmpty;
 
     if (!isLoggedIn) {
       if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
@@ -50,8 +46,14 @@ class _SplashScreenState extends State<SplashScreen> {
     // อ่าน URL ปัจจุบันเพื่อ restore หน้าเดิมบน web
     final fragment = Uri.base.fragment;
     final validRoutes = {
-      '/menu', '/cartlist', '/stockdetail', '/requestcartlist',
-      '/transfercartlist', '/handheldcartlist', '/barcodemanage', '/permission',
+      '/menu',
+      '/cartlist',
+      '/stockdetail',
+      '/requestcartlist',
+      '/transfercartlist',
+      '/handheldcartlist',
+      '/barcodemanage',
+      '/permission',
     };
     final target = validRoutes.contains(fragment) ? fragment : '/menu';
 
@@ -63,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
       '/handheldcartlist': global.permHandheldList,
       '/barcodemanage': global.permBarcodeList,
       '/stockdetail': global.permInfoList,
-      '/permission': global.isSuperAdmin,
+      '/permission': global.isSuperAdmin || global.permPermissionList,
     };
     final hasPermission = routePermMap[target] ?? true;
     final finalTarget = hasPermission ? target : '/menu';

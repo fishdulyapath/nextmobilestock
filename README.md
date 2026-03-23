@@ -126,6 +126,7 @@ transfer_list smallint NOT NULL DEFAULT 0,
 handheld_list smallint NOT NULL DEFAULT 0,
 info_list smallint NOT NULL DEFAULT 0,
 barcode_list smallint NOT NULL DEFAULT 0,
+permission_list smallint NOT NULL DEFAULT 0,
 create_datetime timestamp without time zone DEFAULT timezone('asia/bangkok'::text, now()),
 CONSTRAINT msc_permission_pkey PRIMARY KEY (user_code)
 )

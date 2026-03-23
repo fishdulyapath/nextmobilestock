@@ -20,6 +20,7 @@ bool permTransferList = false;
 bool permHandheldList = false;
 bool permBarcodeList = false;
 bool permInfoList = false;
+bool permPermissionList = false;
 
 bool get isSuperAdmin => userCode.toLowerCase() == 'superadmin';
 
@@ -31,6 +32,7 @@ void setPermissions(PermissionModel perm) {
     permHandheldList = true;
     permBarcodeList = true;
     permInfoList = true;
+    permPermissionList = true;
   } else {
     permStockList = perm.stockList;
     permRequestList = perm.requestList;
@@ -38,6 +40,7 @@ void setPermissions(PermissionModel perm) {
     permHandheldList = perm.handheldList;
     permBarcodeList = perm.barcodeList;
     permInfoList = perm.infoList;
+    permPermissionList = perm.permissionList;
   }
 }
 

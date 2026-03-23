@@ -189,6 +189,7 @@ class WebServiceRepository {
     required bool handheldList,
     required bool barcodeList,
     required bool infoList,
+    required bool permissionList,
   }) async {
     global.loadConfig();
     Dio client = Client().init();
@@ -202,6 +203,7 @@ class WebServiceRepository {
         '&transfer_list=${transferList ? 1 : 0}'
         '&handheld_list=${handheldList ? 1 : 0}'
         '&barcode_list=${barcodeList ? 1 : 0}'
+        '&permission_list=${permissionList ? 1 : 0}'
         '&info_list=${infoList ? 1 : 0}',
       );
       try {

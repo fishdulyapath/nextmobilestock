@@ -270,7 +270,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 maxSize: maxCardSize,
                                 onTap: () => Navigator.of(context).pushNamed('/barcodemanage'),
                               ),
-                            if (global.isSuperAdmin)
+                            if (global.isSuperAdmin || global.permPermissionList)
                               _buildGridMenuCard(
                                 icon: Icons.admin_panel_settings_outlined,
                                 title: 'สิทธิ์ผู้ใช้',
