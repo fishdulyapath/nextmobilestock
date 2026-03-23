@@ -325,7 +325,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 if (_unitData.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'หน่วย: ${_unitData.firstWhere((item) => item['unit_code'] == _selectedUnit)['unit_code']}',
+                    'หน่วย: ${_unitData.firstWhere((item) => item['unit_code'] == _selectedUnit)['unit_name'] ?? _unitData.firstWhere((item) => item['unit_code'] == _selectedUnit)['unit_code']}',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey.shade600,
@@ -533,6 +533,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             final index = entry.key;
             final unitData = entry.value;
             final unitCode = unitData['unit_code'] ?? '-';
+            final unitName = unitData['unit_name'] ?? unitCode;
             final isSelected = unitCode == _selectedUnit;
 
             return DropdownMenuItem<String>(
@@ -550,7 +551,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                 child: Row(
                   children: [
                     Text(
-                      unitCode,
+                      unitName,
                       style: TextStyle(
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                         color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
@@ -609,7 +610,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildHeaderCell(selectedPrice['barcode'] ?? ''),
-                        _buildHeaderCell(selectedPrice['unit_code'] ?? ''),
+                        _buildHeaderCell(selectedPrice['unit_name'] ?? selectedPrice['unit_code'] ?? ''),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -1158,7 +1159,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final whName = stock['wh_name']?.toString() ?? '-';
     final shelfName = stock['shelf_name']?.toString() ?? '-';
     final balanceQty = stock['balance_qty']?.toString() ?? '0';
-    final unitCode = stock['unit_code']?.toString() ?? '';
+    final unitCode = stock['unit_name']?.toString().isNotEmpty == true ? stock['unit_name']?.toString() ?? '' : stock['unit_code']?.toString() ?? '';
 
     final qty = double.tryParse(balanceQty) ?? 0;
     final isPositive = qty > 0;
