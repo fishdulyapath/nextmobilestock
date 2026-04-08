@@ -473,6 +473,7 @@ class WebServiceRepository {
         'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
+            'barcode': detail.barcode,
             'item_code': detail.itemcode,
             'item_name': detail.itemname,
             'unit_code': detail.unitcode,
@@ -547,6 +548,7 @@ class WebServiceRepository {
         'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
+            'barcode': detail.barcode,
             'item_code': detail.itemcode,
             'item_name': detail.itemname,
             'unit_code': detail.unitcode,
@@ -621,6 +623,7 @@ class WebServiceRepository {
         'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
+            'barcode': detail.barcode,
             'item_code': detail.itemcode,
             'item_name': detail.itemname,
             'unit_code': detail.unitcode,
