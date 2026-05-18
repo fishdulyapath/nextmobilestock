@@ -1,5 +1,6 @@
 import 'package:get_storage/get_storage.dart';
 import 'package:mobilestock/model/permission_model.dart';
+import 'package:mobilestock/model/price_permission_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 late GetStorage appStorage;
@@ -21,6 +22,7 @@ bool permHandheldList = false;
 bool permBarcodeList = false;
 bool permInfoList = false;
 bool permPermissionList = false;
+List<bool> pricePermissions = List<bool>.filled(10, false);
 
 bool get isSuperAdmin => userCode.toLowerCase() == 'superadmin';
 
@@ -42,6 +44,17 @@ void setPermissions(PermissionModel perm) {
     permInfoList = perm.infoList;
     permPermissionList = perm.permissionList;
   }
+}
+
+void setPricePermissions(PricePermissionModel perm) {
+  pricePermissions =
+      isSuperAdmin ? List<bool>.filled(10, true) : List<bool>.from(perm.prices);
+}
+
+bool hasPricePermission(int priceIndex) {
+  if (isSuperAdmin) return true;
+  if (priceIndex < 0 || priceIndex >= pricePermissions.length) return false;
+  return pricePermissions[priceIndex];
 }
 
 // ดึง SharedPreferences instance (lazy initialization)

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobilestock/bloc/authentication/authentication_bloc.dart';
 import 'package:mobilestock/global.dart' as global;
 import 'package:mobilestock/model/permission_model.dart';
+import 'package:mobilestock/model/price_permission_model.dart';
 import 'package:mobilestock/model/warehouse_location.dart';
 import 'package:mobilestock/repository/webservice_repository.dart';
 
@@ -33,7 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _login() {
-    if (_usernameController.text.isNotEmpty && _passwordController.text.isNotEmpty) {
+    if (_usernameController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty) {
       if (global.serverProvider.isEmpty || global.serverDatabase.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -62,7 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> getCartList() async {
     await _webServiceRepository.getBranchList().then((value) {
       if (value.success) {
-        final list = (value.data as List).map((data) => WarehouseModel.fromJson(data)).toList();
+        final list = (value.data as List)
+            .map((data) => WarehouseModel.fromJson(data))
+            .toList();
 
         // ถ้าไม่มีสาขา ให้ดึง permission แล้วไป menu
         if (list.isEmpty) {
@@ -100,7 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _fetchPermissionAndGoMenu() async {
-    await _webServiceRepository.getUserPermissionLogin(global.userCode).then((value) {
+    await _webServiceRepository
+        .getUserPermissionLogin(global.userCode)
+        .then((value) {
       if (value.success) {
         final data = value.data as List;
         if (data.isNotEmpty) {
@@ -108,6 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       }
     }).catchError((_) {});
+    await _fetchPricePermission();
     if (mounted) {
       Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
     }
@@ -119,7 +126,9 @@ class _LoginScreenState extends State<LoginScreen> {
       branchname: branch.name,
     );
 
-    await _webServiceRepository.getUserPermissionLogin(global.userCode).then((value) {
+    await _webServiceRepository
+        .getUserPermissionLogin(global.userCode)
+        .then((value) {
       if (value.success) {
         final list = value.data as List;
         if (list.isNotEmpty) {
@@ -128,9 +137,24 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }).catchError((_) {});
 
+    await _fetchPricePermission();
+
     if (mounted) {
       Navigator.of(context).pushNamedAndRemoveUntil('/menu', (route) => false);
     }
+  }
+
+  Future<void> _fetchPricePermission() async {
+    await _webServiceRepository
+        .getUserPricePermissionLogin(global.userCode)
+        .then((value) {
+      if (value.success) {
+        final list = value.data as List;
+        if (list.isNotEmpty) {
+          global.setPricePermissions(PricePermissionModel.fromJson(list.first));
+        }
+      }
+    }).catchError((_) {});
   }
 
   void _filterBranches(String query) {
@@ -139,7 +163,8 @@ class _LoginScreenState extends State<LoginScreen> {
         filteredBranchList = branchList;
       } else {
         filteredBranchList = branchList.where((branch) {
-          return branch.name.toLowerCase().contains(query.toLowerCase()) || branch.code.toLowerCase().contains(query.toLowerCase());
+          return branch.name.toLowerCase().contains(query.toLowerCase()) ||
+              branch.code.toLowerCase().contains(query.toLowerCase());
         }).toList();
       }
     });
@@ -193,7 +218,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(24),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF3B82F6).withOpacity(0.1),
+                                    color: const Color(0xFF3B82F6)
+                                        .withOpacity(0.1),
                                     blurRadius: 30,
                                     offset: const Offset(0, 10),
                                   ),
@@ -208,7 +234,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     height: 130,
                                     width: 130,
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF3B82F6).withOpacity(0.1),
+                                      color: const Color(0xFF3B82F6)
+                                          .withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     child: const Icon(
@@ -249,15 +276,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               controller: _usernameController,
                               decoration: InputDecoration(
                                 labelText: 'รหัสผู้ใช้',
-                                labelStyle: TextStyle(color: Colors.grey.shade500),
-                                prefixIcon: Icon(Icons.person_outline, color: const Color(0xFF3B82F6)),
+                                labelStyle:
+                                    TextStyle(color: Colors.grey.shade500),
+                                prefixIcon: Icon(Icons.person_outline,
+                                    color: const Color(0xFF3B82F6)),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 18),
                               ),
                             ),
                           ),
@@ -280,15 +310,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               obscureText: true,
                               decoration: InputDecoration(
                                 labelText: 'รหัสผ่าน',
-                                labelStyle: TextStyle(color: Colors.grey.shade500),
-                                prefixIcon: Icon(Icons.lock_outline, color: const Color(0xFF3B82F6)),
+                                labelStyle:
+                                    TextStyle(color: Colors.grey.shade500),
+                                prefixIcon: Icon(Icons.lock_outline,
+                                    color: const Color(0xFF3B82F6)),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(16),
                                   borderSide: BorderSide.none,
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 18),
                               ),
                             ),
                           ),
@@ -305,7 +338,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF3B82F6).withOpacity(0.4),
+                                  color:
+                                      const Color(0xFF3B82F6).withOpacity(0.4),
                                   blurRadius: 20,
                                   offset: const Offset(0, 8),
                                 ),
@@ -334,7 +368,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Settings Button
                           TextButton.icon(
                             onPressed: _openServerSettings,
-                            icon: Icon(Icons.settings_outlined, color: Colors.grey.shade500, size: 20),
+                            icon: Icon(Icons.settings_outlined,
+                                color: Colors.grey.shade500, size: 20),
                             label: Text(
                               'ตั้งค่าเซิร์ฟเวอร์',
                               style: TextStyle(
@@ -354,7 +389,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const SizedBox(height: 20),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
                         child: Row(
                           children: [
                             Container(
@@ -414,10 +450,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             decoration: InputDecoration(
                               hintText: 'ค้นหาสาขา...',
                               hintStyle: TextStyle(color: Colors.grey.shade400),
-                              prefixIcon: Icon(Icons.search, color: Colors.grey.shade400),
+                              prefixIcon: Icon(Icons.search,
+                                  color: Colors.grey.shade400),
                               suffixIcon: _searchController.text.isNotEmpty
                                   ? IconButton(
-                                      icon: Icon(Icons.clear, color: Colors.grey.shade400),
+                                      icon: Icon(Icons.clear,
+                                          color: Colors.grey.shade400),
                                       onPressed: () {
                                         _searchController.clear();
                                         _filterBranches('');
@@ -430,7 +468,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               filled: true,
                               fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 14),
                             ),
                           ),
                         ),
@@ -443,11 +482,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.search_off, size: 48, color: Colors.grey.shade300),
+                                    Icon(Icons.search_off,
+                                        size: 48, color: Colors.grey.shade300),
                                     const SizedBox(height: 16),
                                     Text(
                                       'ไม่พบสาขาที่ค้นหา',
-                                      style: TextStyle(color: Colors.grey.shade500),
+                                      style: TextStyle(
+                                          color: Colors.grey.shade500),
                                     ),
                                   ],
                                 ),
@@ -455,7 +496,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             : ListView.separated(
                                 padding: const EdgeInsets.all(16),
                                 itemCount: filteredBranchList.length,
-                                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(height: 12),
                                 itemBuilder: (context, index) {
                                   return Container(
                                     decoration: BoxDecoration(
@@ -470,12 +512,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ],
                                     ),
                                     child: ListTile(
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 8),
                                       leading: Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFF3B82F6).withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(12),
+                                          color: const Color(0xFF3B82F6)
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
                                         ),
                                         child: const Icon(
                                           Icons.business_outlined,
@@ -501,7 +547,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         size: 16,
                                         color: Color(0xFF94A3B8),
                                       ),
-                                      onTap: () => _selectBranch(filteredBranchList[index]),
+                                      onTap: () => _selectBranch(
+                                          filteredBranchList[index]),
                                     ),
                                   );
                                 },

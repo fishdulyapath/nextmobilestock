@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobilestock/global.dart' as global;
 import 'package:mobilestock/model/permission_model.dart';
+import 'package:mobilestock/model/price_permission_model.dart';
 import 'package:mobilestock/repository/webservice_repository.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -26,19 +27,38 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLogin() async {
-    final isLoggedIn = global.userCode.isNotEmpty && global.userName.isNotEmpty && global.serverDatabase.isNotEmpty && global.serverProvider.isNotEmpty && global.branchCode.isNotEmpty;
+    final isLoggedIn = global.userCode.isNotEmpty &&
+        global.userName.isNotEmpty &&
+        global.serverDatabase.isNotEmpty &&
+        global.serverProvider.isNotEmpty &&
+        global.branchCode.isNotEmpty;
 
     if (!isLoggedIn) {
-      if (mounted) Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      if (mounted)
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (route) => false);
       return;
     }
 
     // ดึงสิทธิ์ user ก่อน navigate (กรณี refresh หน้า web)
-    await WebServiceRepository().getUserPermissionLogin(global.userCode).then((value) {
+    await WebServiceRepository()
+        .getUserPermissionLogin(global.userCode)
+        .then((value) {
       if (value.success) {
         final list = value.data as List;
         if (list.isNotEmpty) {
           global.setPermissions(PermissionModel.fromJson(list.first));
+        }
+      }
+    }).catchError((_) {});
+
+    await WebServiceRepository()
+        .getUserPricePermissionLogin(global.userCode)
+        .then((value) {
+      if (value.success) {
+        final list = value.data as List;
+        if (list.isNotEmpty) {
+          global.setPricePermissions(PricePermissionModel.fromJson(list.first));
         }
       }
     }).catchError((_) {});
@@ -54,6 +74,7 @@ class _SplashScreenState extends State<SplashScreen> {
       '/handheldcartlist',
       '/barcodemanage',
       '/permission',
+      '/pricepermission',
     };
     final target = validRoutes.contains(fragment) ? fragment : '/menu';
 
@@ -66,12 +87,14 @@ class _SplashScreenState extends State<SplashScreen> {
       '/barcodemanage': global.permBarcodeList,
       '/stockdetail': global.permInfoList,
       '/permission': global.isSuperAdmin || global.permPermissionList,
+      '/pricepermission': global.isSuperAdmin || global.permPermissionList,
     };
     final hasPermission = routePermMap[target] ?? true;
     final finalTarget = hasPermission ? target : '/menu';
 
     if (mounted) {
-      Navigator.of(context).pushNamedAndRemoveUntil(finalTarget, (route) => false);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(finalTarget, (route) => false);
     }
   }
 

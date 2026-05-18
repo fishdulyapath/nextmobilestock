@@ -18,7 +18,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getLocation?provider=${global.serverProvider}&dbname=${global.serverDatabase}&whcode=$whcode');
+      final response = await client.get(
+          '/getLocation?provider=${global.serverProvider}&dbname=${global.serverDatabase}&whcode=$whcode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -39,7 +40,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getSupplier?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}&search=$search');
+      final response = await client.get(
+          '/getSupplier?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}&search=$search');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -60,7 +62,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getWarehouse?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}');
+      final response = await client.get(
+          '/getWarehouse?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -81,7 +84,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getCartList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}&transflag=$transflag');
+      final response = await client.get(
+          '/getCartList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}&transflag=$transflag');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -102,7 +106,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getCartSubList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}');
+      final response = await client.get(
+          '/getCartSubList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&branchcode=${global.branchCode}');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -123,7 +128,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getBranchList?provider=${global.serverProvider}&dbname=${global.serverDatabase}');
+      final response = await client.get(
+          '/getBranchList?provider=${global.serverProvider}&dbname=${global.serverDatabase}');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -144,7 +150,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getErpUserPermissionLogin?provider=${global.serverProvider}&dbname=${global.serverDatabase}&usercode=$usercode');
+      final response = await client.get(
+          '/getErpUserPermissionLogin?provider=${global.serverProvider}&dbname=${global.serverDatabase}&usercode=$usercode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -165,7 +172,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getErpUserPermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      final response = await client.get(
+          '/getErpUserPermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -221,12 +229,13 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> getItemSearch(String search) async {
+  Future<ApiResponse> getUserPricePermissions(String search) async {
     global.loadConfig();
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemSearch?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      final response = await client.get(
+          '/getErpUserPricePermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -242,12 +251,97 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> getItemDetail(String barcode, String whcode, String lccode) async {
+  Future<ApiResponse> getUserPricePermissionLogin(String usercode) async {
     global.loadConfig();
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&barcode=$barcode&whcode=$whcode&lccode=$lccode');
+      final response = await client.get(
+          '/getErpUserPricePermissionLogin?provider=${global.serverProvider}&dbname=${global.serverDatabase}&usercode=$usercode');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> updatePricePermission({
+    required String usercode,
+    required List<bool> prices,
+  }) async {
+    global.loadConfig();
+    Dio client = Client().init();
+    final safePrices = List<bool>.generate(
+        10, (index) => index < prices.length ? prices[index] : false);
+
+    try {
+      final response = await client.post(
+        '/upDatePricePermission?provider=${global.serverProvider}&dbname=${global.serverDatabase}'
+        '&user=$usercode'
+        '&price_0=${safePrices[0] ? 1 : 0}'
+        '&price_1=${safePrices[1] ? 1 : 0}'
+        '&price_2=${safePrices[2] ? 1 : 0}'
+        '&price_3=${safePrices[3] ? 1 : 0}'
+        '&price_4=${safePrices[4] ? 1 : 0}'
+        '&price_5=${safePrices[5] ? 1 : 0}'
+        '&price_6=${safePrices[6] ? 1 : 0}'
+        '&price_7=${safePrices[7] ? 1 : 0}'
+        '&price_8=${safePrices[8] ? 1 : 0}'
+        '&price_9=${safePrices[9] ? 1 : 0}',
+      );
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getItemSearch(String search) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get(
+          '/getItemSearch?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      try {
+        final rawData = json.decode(response.toString());
+        if (rawData['error'] != null) {
+          throw Exception('${rawData['code']}: ${rawData['message']}');
+        }
+        return ApiResponse.fromMap(rawData);
+      } catch (ex) {
+        throw Exception(ex);
+      }
+    } on DioException catch (ex) {
+      String errorMessage = ex.response.toString();
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<ApiResponse> getItemDetail(
+      String barcode, String whcode, String lccode) async {
+    global.loadConfig();
+    Dio client = Client().init();
+
+    try {
+      final response = await client.get(
+          '/getItemDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&barcode=$barcode&whcode=$whcode&lccode=$lccode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -268,7 +362,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getCartDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
+      final response = await client.get(
+          '/getCartDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -289,7 +384,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getCartSubDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
+      final response = await client.get(
+          '/getCartSubDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -316,12 +412,16 @@ class WebServiceRepository {
         throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
       }
 
-      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+      final cartDetails = (cartDetailResponse.data as List)
+          .map((data) => CartDetailModel.fromJson(data))
+          .toList();
 
       // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
       final now = DateTime.now();
-      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-      final docref = 'MSC${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final random =
+          (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      final docref =
+          'MSC${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
       final payload = {
         'docno': cart.docno,
         'docref': docref,
@@ -330,7 +430,9 @@ class WebServiceRepository {
         'remark': cart.remark,
         'usercode': global.userCode,
         'docdate': cart.docdate,
-        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'doctime': cart.doctime.length >= 5
+            ? cart.doctime.substring(0, 5)
+            : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
             'barcode': detail.barcode,
@@ -385,12 +487,16 @@ class WebServiceRepository {
         throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
       }
 
-      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+      final cartDetails = (cartDetailResponse.data as List)
+          .map((data) => CartDetailModel.fromJson(data))
+          .toList();
 
       // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
       final now = DateTime.now();
-      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-      final docref = 'MHL${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final random =
+          (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      final docref =
+          'MHL${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
       final payload = {
         'docno': cart.docno,
         'docref': docref,
@@ -399,7 +505,9 @@ class WebServiceRepository {
         'remark': cart.remark,
         'usercode': global.userCode,
         'docdate': cart.docdate,
-        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'doctime': cart.doctime.length >= 5
+            ? cart.doctime.substring(0, 5)
+            : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
             'barcode': detail.barcode,
@@ -454,12 +562,16 @@ class WebServiceRepository {
         throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
       }
 
-      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+      final cartDetails = (cartDetailResponse.data as List)
+          .map((data) => CartDetailModel.fromJson(data))
+          .toList();
 
       // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
       final now = DateTime.now();
-      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-      String docref = 'MPI${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final random =
+          (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      String docref =
+          'MPI${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
 
       final payload = {
         'docno': cart.docno,
@@ -471,7 +583,9 @@ class WebServiceRepository {
         'custcode': cart.custcode,
         'transflag': cart.transflag,
         'docdate': cart.docdate,
-        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'doctime': cart.doctime.length >= 5
+            ? cart.doctime.substring(0, 5)
+            : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
             'barcode': detail.barcode,
@@ -526,12 +640,16 @@ class WebServiceRepository {
         throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
       }
 
-      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+      final cartDetails = (cartDetailResponse.data as List)
+          .map((data) => CartDetailModel.fromJson(data))
+          .toList();
 
       // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
       final now = DateTime.now();
-      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-      String docref = 'MRTF${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final random =
+          (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      String docref =
+          'MRTF${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
 
       final payload = {
         'docno': cart.docno,
@@ -546,7 +664,9 @@ class WebServiceRepository {
         'custcode': cart.custcode,
         'transflag': cart.transflag,
         'docdate': cart.docdate,
-        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'doctime': cart.doctime.length >= 5
+            ? cart.doctime.substring(0, 5)
+            : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
             'barcode': detail.barcode,
@@ -601,12 +721,16 @@ class WebServiceRepository {
         throw Exception('ไม่สามารถดึงรายละเอียดตะกร้าได้');
       }
 
-      final cartDetails = (cartDetailResponse.data as List).map((data) => CartDetailModel.fromJson(data)).toList();
+      final cartDetails = (cartDetailResponse.data as List)
+          .map((data) => CartDetailModel.fromJson(data))
+          .toList();
 
       // สร้าง docref: MTFyyyymmddhhmm-#### (random 4 ตัว)
       final now = DateTime.now();
-      final random = (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
-      String docref = 'MTF${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
+      final random =
+          (1000 + (DateTime.now().millisecondsSinceEpoch % 9000)).toString();
+      String docref =
+          'MTF${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}-$random'; // สร้าง payload
 
       final payload = {
         'docno': cart.docno,
@@ -621,7 +745,9 @@ class WebServiceRepository {
         'custcode': cart.custcode,
         'transflag': cart.transflag,
         'docdate': cart.docdate,
-        'doctime': cart.doctime.length >= 5 ? cart.doctime.substring(0, 5) : cart.doctime, // เอาแค่ HH:mm
+        'doctime': cart.doctime.length >= 5
+            ? cart.doctime.substring(0, 5)
+            : cart.doctime, // เอาแค่ HH:mm
         'details': cartDetails.map((detail) {
           return {
             'barcode': detail.barcode,
@@ -670,7 +796,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/sendCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
+      final response = await client.get(
+          '/sendCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -691,7 +818,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/sendSubCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
+      final response = await client.get(
+          '/sendSubCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -712,7 +840,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/deleteCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
+      final response = await client.get(
+          '/deleteCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}&docno=$docno');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -728,25 +857,37 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> createCart(String docno, String whcode, String locationcode, String remark, String docdate, String doctime, String custcode, int transflag, {String whto = '', String locationto = ''}) async {
+  Future<ApiResponse> createCart(
+      String docno,
+      String whcode,
+      String locationcode,
+      String remark,
+      String docdate,
+      String doctime,
+      String custcode,
+      int transflag,
+      {String whto = '',
+      String locationto = ''}) async {
     global.loadConfig();
     Dio client = Client().init();
 
     try {
-      final response = await client.post('/createCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}', data: {
-        'docno': docno,
-        'whcode': whcode,
-        'locationcode': locationcode,
-        'remark': remark,
-        'usercode': global.userCode,
-        'branchcode': global.branchCode,
-        'docdate': docdate,
-        'doctime': doctime,
-        'custcode': custcode,
-        'transflag': transflag.toString(),
-        'whto': whto,
-        'locationto': locationto
-      });
+      final response = await client.post(
+          '/createCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+          data: {
+            'docno': docno,
+            'whcode': whcode,
+            'locationcode': locationcode,
+            'remark': remark,
+            'usercode': global.userCode,
+            'branchcode': global.branchCode,
+            'docdate': docdate,
+            'doctime': doctime,
+            'custcode': custcode,
+            'transflag': transflag.toString(),
+            'whto': whto,
+            'locationto': locationto
+          });
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -762,7 +903,18 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> mergeCart(String docno, String docdate, String doctime, String whcode, String locationcode, String remark, String carts, String custcode, int transflag, {String whto = '', String locationto = ''}) async {
+  Future<ApiResponse> mergeCart(
+      String docno,
+      String docdate,
+      String doctime,
+      String whcode,
+      String locationcode,
+      String remark,
+      String carts,
+      String custcode,
+      int transflag,
+      {String whto = '',
+      String locationto = ''}) async {
     global.loadConfig();
     Dio client = Client().init();
     var postData = {
@@ -781,7 +933,9 @@ class WebServiceRepository {
       'locationto': locationto
     };
     try {
-      final response = await client.post('/mergeCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}', data: postData);
+      final response = await client.post(
+          '/mergeCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+          data: postData);
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -797,13 +951,21 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> saveCartDetail(List<ItemScanModel> item, CartModel cart) async {
+  Future<ApiResponse> saveCartDetail(
+      List<ItemScanModel> item, CartModel cart) async {
     global.loadConfig();
     Dio client = Client().init();
 
     var detail = item.map((e) => e.toJson()).toList();
     try {
-      final response = await client.post('/saveCartDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}', data: {'docno': cart.docno, 'whcode': cart.whcode, 'locationcode': cart.locationcode, 'details': detail});
+      final response = await client.post(
+          '/saveCartDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+          data: {
+            'docno': cart.docno,
+            'whcode': cart.whcode,
+            'locationcode': cart.locationcode,
+            'details': detail
+          });
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -819,12 +981,20 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> saveCartSubDetail(List<ItemScanModel> item, CartModel cart) async {
+  Future<ApiResponse> saveCartSubDetail(
+      List<ItemScanModel> item, CartModel cart) async {
     global.loadConfig();
     Dio client = Client().init();
     var detail = item.map((e) => e.toJson()).toList();
     try {
-      final response = await client.post('/saveCartSubDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}', data: {'docno': cart.docno, 'whcode': cart.whcode, 'locationcode': cart.locationcode, 'details': detail});
+      final response = await client.post(
+          '/saveCartSubDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+          data: {
+            'docno': cart.docno,
+            'whcode': cart.whcode,
+            'locationcode': cart.locationcode,
+            'details': detail
+          });
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -840,13 +1010,35 @@ class WebServiceRepository {
     }
   }
 
-  Future<ApiResponse> updateCart(String docno, String whcode, String locationcode, String remark, String docdate, String doctime, String custcode, {String whto = '', String locationto = ''}) async {
+  Future<ApiResponse> updateCart(
+      String docno,
+      String whcode,
+      String locationcode,
+      String remark,
+      String docdate,
+      String doctime,
+      String custcode,
+      {String whto = '',
+      String locationto = ''}) async {
     global.loadConfig();
     Dio client = Client().init();
 
     try {
-      final response = await client.post('/updateCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
-          data: {'docno': docno, 'whcode': whcode, 'locationcode': locationcode, 'remark': remark, 'usercode': global.userCode, 'branchcode': global.branchCode, 'docdate': docdate, 'doctime': doctime, 'custcode': custcode, 'whto': whto, 'locationto': locationto});
+      final response = await client.post(
+          '/updateCart?provider=${global.serverProvider}&dbname=${global.serverDatabase}',
+          data: {
+            'docno': docno,
+            'whcode': whcode,
+            'locationcode': locationcode,
+            'remark': remark,
+            'usercode': global.userCode,
+            'branchcode': global.branchCode,
+            'docdate': docdate,
+            'doctime': doctime,
+            'custcode': custcode,
+            'whto': whto,
+            'locationto': locationto
+          });
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -889,7 +1081,8 @@ class WebServiceRepository {
 
       if (response.statusCode == 200) {
         Uint8List decodedBytes = base64Decode(response.data);
-        String decompressedResponse = utf8.decode(GZipDecoder().decodeBytes(decodedBytes));
+        String decompressedResponse =
+            utf8.decode(GZipDecoder().decodeBytes(decodedBytes));
         Map<String, dynamic> result = jsonDecode(decompressedResponse);
         return ApiResponse.fromMap({
           'success': true,
@@ -934,7 +1127,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      final response = await client.get(
+          '/getItemList?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -956,7 +1150,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemUnit?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getItemUnit?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -978,7 +1173,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemPrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getItemPrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -999,7 +1195,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemBarcodePrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getItemBarcodePrice?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1020,7 +1217,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemPriceNormal?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getItemPriceNormal?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1041,7 +1239,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getItemPriceStandard?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getItemPriceStandard?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1063,7 +1262,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getStockDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getStockDetail?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1085,7 +1285,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getInventoryMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
+      final response = await client.get(
+          '/getInventoryMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&search=$search');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1107,7 +1308,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getBarcodeMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getBarcodeMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1129,13 +1331,15 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/checkBarcodeExists?provider=${global.serverProvider}&dbname=${global.serverDatabase}&barcode=$barcode');
+      final response = await client.get(
+          '/checkBarcodeExists?provider=${global.serverProvider}&dbname=${global.serverDatabase}&barcode=$barcode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
           throw Exception('${rawData['code']}: ${rawData['message']}');
         }
-        return ApiResponse(success: rawData['success'] ?? false, message: '', data: rawData);
+        return ApiResponse(
+            success: rawData['success'] ?? false, message: '', data: rawData);
       } catch (ex) {
         throw Exception(ex);
       }
@@ -1151,7 +1355,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getUnitMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getUnitMaster?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {
@@ -1247,7 +1452,8 @@ class WebServiceRepository {
     Dio client = Client().init();
 
     try {
-      final response = await client.get('/getAccrued?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
+      final response = await client.get(
+          '/getAccrued?provider=${global.serverProvider}&dbname=${global.serverDatabase}&itemcode=$itemCode');
       try {
         final rawData = json.decode(response.toString());
         if (rawData['error'] != null) {

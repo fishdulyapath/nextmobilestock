@@ -101,7 +101,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Future<void> _loadPriceData() async {
     try {
       final result = await _webServiceRepository.getItemPrice(widget.itemCode);
-      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+      if (result.success &&
+          result.data != null &&
+          (result.data as List).isNotEmpty) {
         setState(() {
           _priceDataList = List<Map<String, dynamic>>.from(result.data);
           // Default to first item
@@ -123,8 +125,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Future<void> _loadPriceNormal() async {
     try {
-      final result = await _webServiceRepository.getItemPriceNormal(widget.itemCode);
-      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+      final result =
+          await _webServiceRepository.getItemPriceNormal(widget.itemCode);
+      if (result.success &&
+          result.data != null &&
+          (result.data as List).isNotEmpty) {
         setState(() {
           _priceNormalDataList = List<Map<String, dynamic>>.from(result.data);
           // Default to first item
@@ -146,8 +151,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Future<void> _loadPriceStandard() async {
     try {
-      final result = await _webServiceRepository.getItemPriceStandard(widget.itemCode);
-      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+      final result =
+          await _webServiceRepository.getItemPriceStandard(widget.itemCode);
+      if (result.success &&
+          result.data != null &&
+          (result.data as List).isNotEmpty) {
         setState(() {
           _priceStandardDataList = List<Map<String, dynamic>>.from(result.data);
           // Default to first item
@@ -169,8 +177,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Future<void> _loadBarcodePrice() async {
     try {
-      final result = await _webServiceRepository.getItemBarcodePrice(widget.itemCode);
-      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+      final result =
+          await _webServiceRepository.getItemBarcodePrice(widget.itemCode);
+      if (result.success &&
+          result.data != null &&
+          (result.data as List).isNotEmpty) {
         setState(() {
           _priceBarcodeDataList = List<Map<String, dynamic>>.from(result.data);
           // Default to first item
@@ -192,7 +203,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
 
   Future<void> _loadStockData() async {
     try {
-      final result = await _webServiceRepository.getStockDetail(widget.itemCode);
+      final result =
+          await _webServiceRepository.getStockDetail(widget.itemCode);
       if (result.success) {
         setState(() {
           _stockData = List<Map<String, dynamic>>.from(result.data ?? []);
@@ -215,7 +227,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   Future<void> _loadAccruedData() async {
     try {
       final result = await _webServiceRepository.getAccrued(widget.itemCode);
-      if (result.success && result.data != null && (result.data as List).isNotEmpty) {
+      if (result.success &&
+          result.data != null &&
+          (result.data as List).isNotEmpty) {
         setState(() {
           _accruedData = (result.data as List).first;
           _isLoadingAccrued = false;
@@ -299,7 +313,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFF3B82F6).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(6),
@@ -341,6 +356,21 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
   }
 
   Widget _buildPriceSection() {
+    final isLoadingAnyPrice = _isLoadingPrice ||
+        _isLoadingStandardPrice ||
+        _isLoadingNormalPrice ||
+        _isLoadingBarcodePrice;
+    final hasVisibleFormulaPrice =
+        _priceDataList.isNotEmpty && _hasAnyFormulaPricePermission();
+    final hasAnyVisiblePrice = hasVisibleFormulaPrice ||
+        _priceStandardDataList.isNotEmpty ||
+        _priceNormalDataList.isNotEmpty ||
+        _priceBarcodeDataList.isNotEmpty;
+
+    if (!isLoadingAnyPrice && !hasAnyVisiblePrice) {
+      return const SizedBox.shrink();
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(6, 6, 6, 0),
       child: Column(
@@ -354,7 +384,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   color: const Color(0xFF10B981).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.attach_money, color: Color(0xFF10B981), size: 20),
+                child: const Icon(Icons.attach_money,
+                    color: Color(0xFF10B981), size: 20),
               ),
               const SizedBox(width: 10),
               const Text(
@@ -387,16 +418,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingPrice
                 ? const Padding(
                     padding: EdgeInsets.all(30),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF10B981))),
                   )
-                : _priceError.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(
-                          child: Text(_priceError, style: TextStyle(color: Colors.grey.shade500)),
-                        ),
-                      )
-                    : _buildPriceTable(),
+                : _priceDataList.isEmpty
+                    ? const SizedBox.shrink()
+                    : _priceError.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Center(
+                              child: Text(_priceError,
+                                  style:
+                                      TextStyle(color: Colors.grey.shade500)),
+                            ),
+                          )
+                        : _buildPriceTable(),
           ),
           const SizedBox(height: 12),
           // ราคาตามมาตรฐาน
@@ -415,16 +452,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingStandardPrice
                 ? const Padding(
                     padding: EdgeInsets.all(30),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF10B981))),
                   )
-                : _priceStandardError.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(
-                          child: Text(_priceStandardError, style: TextStyle(color: Colors.grey.shade500)),
-                        ),
-                      )
-                    : _buildPriceStandardTable(),
+                : _priceStandardDataList.isEmpty
+                    ? const SizedBox.shrink()
+                    : _priceStandardError.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Center(
+                              child: Text(_priceStandardError,
+                                  style:
+                                      TextStyle(color: Colors.grey.shade500)),
+                            ),
+                          )
+                        : _buildPriceStandardTable(),
           ),
           const SizedBox(height: 12),
           // ราคาทั่วไป
@@ -443,16 +486,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingNormalPrice
                 ? const Padding(
                     padding: EdgeInsets.all(30),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF10B981))),
                   )
-                : _priceNormalError.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(
-                          child: Text(_priceNormalError, style: TextStyle(color: Colors.grey.shade500)),
-                        ),
-                      )
-                    : _buildPriceNormalTable(),
+                : _priceNormalDataList.isEmpty
+                    ? const SizedBox.shrink()
+                    : _priceNormalError.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Center(
+                              child: Text(_priceNormalError,
+                                  style:
+                                      TextStyle(color: Colors.grey.shade500)),
+                            ),
+                          )
+                        : _buildPriceNormalTable(),
           ),
           const SizedBox(height: 12),
           //ราคาตามบาร์โค้ด
@@ -471,16 +520,22 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingBarcodePrice
                 ? const Padding(
                     padding: EdgeInsets.all(30),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF10B981))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF10B981))),
                   )
-                : _priceBarcodeError.isNotEmpty
-                    ? Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Center(
-                          child: Text(_priceBarcodeError, style: TextStyle(color: Colors.grey.shade500)),
-                        ),
-                      )
-                    : _buildBarcodePriceTable(),
+                : _priceBarcodeDataList.isEmpty
+                    ? const SizedBox.shrink()
+                    : _priceBarcodeError.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Center(
+                              child: Text(_priceBarcodeError,
+                                  style:
+                                      TextStyle(color: Colors.grey.shade500)),
+                            ),
+                          )
+                        : _buildBarcodePriceTable(),
           ),
         ],
       ),
@@ -494,7 +549,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFF10B981).withOpacity(0.3), width: 1.5),
+        border: Border.all(
+            color: const Color(0xFF10B981).withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: const Color(0xFF10B981).withOpacity(0.1),
@@ -553,8 +609,11 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     Text(
                       unitName,
                       style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        color: isSelected ? const Color(0xFF10B981) : const Color(0xFF1E293B),
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected
+                            ? const Color(0xFF10B981)
+                            : const Color(0xFF1E293B),
                       ),
                     ),
                   ],
@@ -610,16 +669,21 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildHeaderCell(selectedPrice['barcode'] ?? ''),
-                        _buildHeaderCell(selectedPrice['unit_name'] ?? selectedPrice['unit_code'] ?? ''),
+                        _buildHeaderCell(selectedPrice['unit_name'] ??
+                            selectedPrice['unit_code'] ??
+                            ''),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
                         _buildPriceCell('ราคา1', selectedPrice['price'] ?? '0'),
-                        _buildPriceCell('ราคา2', selectedPrice['price_2'] ?? '0'),
-                        _buildPriceCell('ราคา3', selectedPrice['price_3'] ?? '0'),
-                        _buildPriceCell('ราคา4', selectedPrice['price_4'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา2', selectedPrice['price_2'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา3', selectedPrice['price_3'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา4', selectedPrice['price_4'] ?? '0'),
                       ],
                     ),
                   ],
@@ -673,28 +737,39 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildTextCell('จากวันที่', selectedPrice['from_date'] ?? ''),
-                        _buildTextCell('ถึงวันที่', selectedPrice['to_date'] ?? ''),
-                        _buildTextCell('จากจำนวน', selectedPrice['from_qty'] ?? ''),
-                        _buildTextCell('ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
-                        _buildTextCell('ลูกค้า', selectedPrice['cust_code'] ?? ''),
+                        _buildTextCell(
+                            'จากวันที่', selectedPrice['from_date'] ?? ''),
+                        _buildTextCell(
+                            'ถึงวันที่', selectedPrice['to_date'] ?? ''),
+                        _buildTextCell(
+                            'จากจำนวน', selectedPrice['from_qty'] ?? ''),
+                        _buildTextCell(
+                            'ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
+                        _buildTextCell(
+                            'ลูกค้า', selectedPrice['cust_code'] ?? ''),
                       ],
                     ),
                     const SizedBox(height: 3),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildTextCell('CustGroup1', selectedPrice['cust_group_1'] ?? ''),
-                        _buildTextCell('CustGroup2', selectedPrice['cust_group_2'] ?? ''),
-                        _buildTextCell('SaleType', selectedPrice['sale_type'] ?? ''),
-                        _buildTextCell('PriceType', selectedPrice['price_type'] ?? ''),
+                        _buildTextCell(
+                            'CustGroup1', selectedPrice['cust_group_1'] ?? ''),
+                        _buildTextCell(
+                            'CustGroup2', selectedPrice['cust_group_2'] ?? ''),
+                        _buildTextCell(
+                            'SaleType', selectedPrice['sale_type'] ?? ''),
+                        _buildTextCell(
+                            'PriceType', selectedPrice['price_type'] ?? ''),
                       ],
                     ),
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        _buildPriceCell('ราคา1', selectedPrice['sale_price1'] ?? '0'),
-                        _buildPriceCell('ราคา2', selectedPrice['sale_price2'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา1', selectedPrice['sale_price1'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา2', selectedPrice['sale_price2'] ?? '0'),
                       ],
                     ),
                   ],
@@ -748,28 +823,39 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildTextCell('จากวันที่', selectedPrice['from_date'] ?? ''),
-                        _buildTextCell('ถึงวันที่', selectedPrice['to_date'] ?? ''),
-                        _buildTextCell('จากจำนวน', selectedPrice['from_qty'] ?? ''),
-                        _buildTextCell('ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
-                        _buildTextCell('ลูกค้า', selectedPrice['cust_code'] ?? ''),
+                        _buildTextCell(
+                            'จากวันที่', selectedPrice['from_date'] ?? ''),
+                        _buildTextCell(
+                            'ถึงวันที่', selectedPrice['to_date'] ?? ''),
+                        _buildTextCell(
+                            'จากจำนวน', selectedPrice['from_qty'] ?? ''),
+                        _buildTextCell(
+                            'ถึงจำนวน', selectedPrice['to_qty'] ?? ''),
+                        _buildTextCell(
+                            'ลูกค้า', selectedPrice['cust_code'] ?? ''),
                       ],
                     ),
                     const SizedBox(height: 3),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildTextCell('CustGroup1', selectedPrice['cust_group_1'] ?? ''),
-                        _buildTextCell('CustGroup2', selectedPrice['cust_group_2'] ?? ''),
-                        _buildTextCell('SaleType', selectedPrice['sale_type'] ?? ''),
-                        _buildTextCell('PriceType', selectedPrice['price_type'] ?? ''),
+                        _buildTextCell(
+                            'CustGroup1', selectedPrice['cust_group_1'] ?? ''),
+                        _buildTextCell(
+                            'CustGroup2', selectedPrice['cust_group_2'] ?? ''),
+                        _buildTextCell(
+                            'SaleType', selectedPrice['sale_type'] ?? ''),
+                        _buildTextCell(
+                            'PriceType', selectedPrice['price_type'] ?? ''),
                       ],
                     ),
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        _buildPriceCell('ราคา1', selectedPrice['sale_price1'] ?? '0'),
-                        _buildPriceCell('ราคา2', selectedPrice['sale_price2'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา1', selectedPrice['sale_price1'] ?? '0'),
+                        _buildPriceCell(
+                            'ราคา2', selectedPrice['sale_price2'] ?? '0'),
                       ],
                     ),
                   ],
@@ -797,6 +883,13 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
       return Container();
     }
 
+    if (!_hasAnyFormulaPricePermission()) {
+      return Container();
+    }
+
+    return _buildVisibleFormulaPriceTable(selectedPrice);
+
+    // ignore: dead_code
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Column(
@@ -835,6 +928,49 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildVisibleFormulaPriceTable(Map<String, dynamic> selectedPrice) {
+    final firstRow = _buildFormulaPriceCells(selectedPrice, 0, 4);
+    final secondRow = _buildFormulaPriceCells(selectedPrice, 5, 9);
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'ราคาตามสูตร',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF1E293B),
+            ),
+          ),
+          const SizedBox(height: 6),
+          if (firstRow.isNotEmpty) Row(children: firstRow),
+          if (firstRow.isNotEmpty && secondRow.isNotEmpty)
+            const SizedBox(height: 3),
+          if (secondRow.isNotEmpty) Row(children: secondRow),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildFormulaPriceCells(
+      Map<String, dynamic> selectedPrice, int start, int end) {
+    final cells = <Widget>[];
+    for (var index = start; index <= end; index++) {
+      if (global.hasPricePermission(index)) {
+        cells.add(_buildPriceCell(
+            'ราคา $index', selectedPrice['price_$index'] ?? '0'));
+      }
+    }
+    return cells;
+  }
+
+  bool _hasAnyFormulaPricePermission() {
+    return List.generate(10, (index) => index).any(global.hasPricePermission);
   }
 
   Widget _buildTextCell(String label, dynamic text) {
@@ -945,7 +1081,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   color: const Color(0xFF8B5CF6).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.pending_actions, color: Color(0xFF8B5CF6), size: 20),
+                child: const Icon(Icons.pending_actions,
+                    color: Color(0xFF8B5CF6), size: 20),
               ),
               const SizedBox(width: 10),
               const Text(
@@ -974,13 +1111,16 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingAccrued
                 ? const Padding(
                     padding: EdgeInsets.all(20),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF8B5CF6))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF8B5CF6))),
                   )
                 : _accruedError.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.all(20),
                         child: Center(
-                          child: Text(_accruedError, style: TextStyle(color: Colors.grey.shade500)),
+                          child: Text(_accruedError,
+                              style: TextStyle(color: Colors.grey.shade500)),
                         ),
                       )
                     : _buildAccruedContent(),
@@ -1027,7 +1167,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     );
   }
 
-  Widget _buildAccruedCard(String label, dynamic qty, IconData icon, Color color) {
+  Widget _buildAccruedCard(
+      String label, dynamic qty, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -1076,7 +1217,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                   color: const Color(0xFF3B82F6).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.warehouse_outlined, color: Color(0xFF3B82F6), size: 20),
+                child: const Icon(Icons.warehouse_outlined,
+                    color: Color(0xFF3B82F6), size: 20),
               ),
               const SizedBox(width: 10),
               const Text(
@@ -1105,13 +1247,16 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             child: _isLoadingStock
                 ? const Padding(
                     padding: EdgeInsets.all(30),
-                    child: Center(child: CircularProgressIndicator(color: Color(0xFF3B82F6))),
+                    child: Center(
+                        child: CircularProgressIndicator(
+                            color: Color(0xFF3B82F6))),
                   )
                 : _stockError.isNotEmpty
                     ? Padding(
                         padding: const EdgeInsets.all(20),
                         child: Center(
-                          child: Text(_stockError, style: TextStyle(color: Colors.grey.shade500)),
+                          child: Text(_stockError,
+                              style: TextStyle(color: Colors.grey.shade500)),
                         ),
                       )
                     : _buildStockList(),
@@ -1159,7 +1304,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
     final whName = stock['wh_name']?.toString() ?? '-';
     final shelfName = stock['shelf_name']?.toString() ?? '-';
     final balanceQty = stock['balance_qty']?.toString() ?? '0';
-    final unitCode = stock['unit_name']?.toString().isNotEmpty == true ? stock['unit_name']?.toString() ?? '' : stock['unit_code']?.toString() ?? '';
+    final unitCode = stock['unit_name']?.toString().isNotEmpty == true
+        ? stock['unit_name']?.toString() ?? ''
+        : stock['unit_code']?.toString() ?? '';
 
     final qty = double.tryParse(balanceQty) ?? 0;
     final isPositive = qty > 0;
@@ -1169,7 +1316,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: isPositive ? const Color(0xFF10B981).withOpacity(0.1) : Colors.grey.shade100,
+            color: isPositive
+                ? const Color(0xFF10B981).withOpacity(0.1)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
@@ -1205,7 +1354,9 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: isPositive ? const Color(0xFF10B981).withOpacity(0.1) : Colors.grey.shade100,
+            color: isPositive
+                ? const Color(0xFF10B981).withOpacity(0.1)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -1213,7 +1364,8 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: isPositive ? const Color(0xFF10B981) : Colors.grey.shade500,
+              color:
+                  isPositive ? const Color(0xFF10B981) : Colors.grey.shade500,
             ),
           ),
         ),

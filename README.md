@@ -130,3 +130,20 @@ permission_list smallint NOT NULL DEFAULT 0,
 create_datetime timestamp without time zone DEFAULT timezone('asia/bangkok'::text, now()),
 CONSTRAINT msc_permission_pkey PRIMARY KEY (user_code)
 )
+
+CREATE TABLE public.msc_price_permission
+(
+user_code character varying(255) NOT NULL,
+price_0 smallint NOT NULL DEFAULT 0,
+price_1 smallint NOT NULL DEFAULT 0,
+price_2 smallint NOT NULL DEFAULT 0,
+price_3 smallint NOT NULL DEFAULT 0,
+price_4 smallint NOT NULL DEFAULT 0,
+price_5 smallint NOT NULL DEFAULT 0,
+price_6 smallint NOT NULL DEFAULT 0,
+price_7 smallint NOT NULL DEFAULT 0,
+price_8 smallint NOT NULL DEFAULT 0,
+price_9 smallint NOT NULL DEFAULT 0,
+create_datetime timestamp without time zone DEFAULT timezone('Asia/Bangkok'::text, now()),
+CONSTRAINT msc_price_permission_pkey PRIMARY KEY (user_code)
+)

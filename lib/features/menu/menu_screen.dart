@@ -82,7 +82,8 @@ class _MenuScreenState extends State<MenuScreen> {
                             onPressed: () {
                               _showLogoutDialog();
                             },
-                            icon: Icon(Icons.logout_rounded, color: Colors.red.shade400),
+                            icon: Icon(Icons.logout_rounded,
+                                color: Colors.red.shade400),
                             tooltip: 'ออกจากระบบ',
                           ),
                         ),
@@ -115,7 +116,8 @@ class _MenuScreenState extends State<MenuScreen> {
                               borderRadius: BorderRadius.circular(14),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF3B82F6).withOpacity(0.2),
+                                  color:
+                                      const Color(0xFF3B82F6).withOpacity(0.2),
                                   blurRadius: 15,
                                   offset: const Offset(0, 5),
                                 ),
@@ -135,7 +137,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      global.branchName.isNotEmpty ? global.branchName : 'ไม่ระบุสาขา',
+                                      global.branchName.isNotEmpty
+                                          ? global.branchName
+                                          : 'ไม่ระบุสาขา',
                                       style: const TextStyle(
                                         fontSize: 15,
                                         color: Colors.black,
@@ -146,16 +150,21 @@ class _MenuScreenState extends State<MenuScreen> {
                                     GestureDetector(
                                       onTap: _showChangeBranchDialog,
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 6, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: Colors.orange.shade50,
-                                          borderRadius: BorderRadius.circular(6),
-                                          border: Border.all(color: Colors.orange.shade200),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                          border: Border.all(
+                                              color: Colors.orange.shade200),
                                         ),
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Icon(Icons.swap_horiz, size: 14, color: Colors.orange.shade700),
+                                            Icon(Icons.swap_horiz,
+                                                size: 14,
+                                                color: Colors.orange.shade700),
                                             const SizedBox(width: 4),
                                             Text(
                                               'เปลี่ยนสาขา',
@@ -173,7 +182,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  global.userName.isNotEmpty ? global.userName : 'ผู้ใช้งาน',
+                                  global.userName.isNotEmpty
+                                      ? global.userName
+                                      : 'ผู้ใช้งาน',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -223,7 +234,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'ตะกร้าสินค้า',
                                 color: Colors.purple,
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/handheldcartlist'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/handheldcartlist'),
                               ),
                             if (global.permRequestList)
                               _buildGridMenuCard(
@@ -232,7 +244,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'ขอโอนสินค้า',
                                 color: const Color(0xFF3B82F6),
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/requestcartlist'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/requestcartlist'),
                               ),
                             if (global.permTransferList)
                               _buildGridMenuCard(
@@ -241,7 +254,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'โอนสินค้าออก',
                                 color: const Color(0xFFEF4444),
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/transfercartlist'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/transfercartlist'),
                               ),
                             if (global.permStockList)
                               _buildGridMenuCard(
@@ -250,7 +264,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'ตรวจนับสินค้า',
                                 color: const Color(0xFF10B981),
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/cartlist'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/cartlist'),
                               ),
                             if (global.permInfoList)
                               _buildGridMenuCard(
@@ -259,7 +274,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'ตรวจสอบสินค้าคงคลัง',
                                 color: const Color(0xFFF59E0B),
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/stockdetail'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/stockdetail'),
                               ),
                             if (global.permBarcodeList)
                               _buildGridMenuCard(
@@ -268,16 +284,30 @@ class _MenuScreenState extends State<MenuScreen> {
                                 subtitle: 'จัดการบาร์โค้ด',
                                 color: const Color(0xFF6366F1),
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/barcodemanage'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/barcodemanage'),
                               ),
-                            if (global.isSuperAdmin || global.permPermissionList)
+                            if (global.isSuperAdmin ||
+                                global.permPermissionList)
                               _buildGridMenuCard(
                                 icon: Icons.admin_panel_settings_outlined,
                                 title: 'สิทธิ์ผู้ใช้',
                                 subtitle: 'จัดการสิทธิ์การเข้าถึง',
                                 color: Colors.teal,
                                 maxSize: maxCardSize,
-                                onTap: () => Navigator.of(context).pushNamed('/permission'),
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/permission'),
+                              ),
+                            if (global.isSuperAdmin ||
+                                global.permPermissionList)
+                              _buildGridMenuCard(
+                                icon: Icons.price_change_outlined,
+                                title: 'สิทธิ์ราคา',
+                                subtitle: 'กำหนดการเห็นราคา',
+                                color: const Color(0xFF0F766E),
+                                maxSize: maxCardSize,
+                                onTap: () => Navigator.of(context)
+                                    .pushNamed('/pricepermission'),
                               ),
                           ],
                         );
@@ -415,18 +445,22 @@ class _MenuScreenState extends State<MenuScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('ยกเลิก', style: TextStyle(color: Colors.grey.shade600)),
+            child:
+                Text('ยกเลิก', style: TextStyle(color: Colors.grey.shade600)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red.shade400,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
               Navigator.pop(context);
-              BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLoggedOut());
+              BlocProvider.of<AuthenticationBloc>(context)
+                  .add(AuthenticationLoggedOut());
             },
-            child: const Text('ออกจากระบบ', style: TextStyle(color: Colors.white)),
+            child:
+                const Text('ออกจากระบบ', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -448,7 +482,9 @@ class _MenuScreenState extends State<MenuScreen> {
       Navigator.pop(context); // ปิด loading
 
       if (result.success) {
-        final branchList = (result.data as List).map((data) => WarehouseModel.fromJson(data)).toList();
+        final branchList = (result.data as List)
+            .map((data) => WarehouseModel.fromJson(data))
+            .toList();
 
         if (branchList.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -489,7 +525,8 @@ class _MenuScreenState extends State<MenuScreen> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Row(
               children: [
                 Container(
@@ -498,7 +535,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     color: const Color(0xFF3B82F6).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.store_outlined, color: Color(0xFF3B82F6)),
+                  child: const Icon(Icons.store_outlined,
+                      color: Color(0xFF3B82F6)),
                 ),
                 const SizedBox(width: 12),
                 const Text('เลือกสาขา'),
@@ -514,7 +552,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     controller: searchController,
                     decoration: InputDecoration(
                       hintText: 'ค้นหาสาขา...',
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF94A3B8)),
+                      prefixIcon:
+                          const Icon(Icons.search, color: Color(0xFF94A3B8)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -523,7 +562,8 @@ class _MenuScreenState extends State<MenuScreen> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: Colors.grey.shade300),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                     ),
                     onChanged: (value) {
                       setDialogState(() {
@@ -531,7 +571,12 @@ class _MenuScreenState extends State<MenuScreen> {
                           filteredList = branchList;
                         } else {
                           filteredList = branchList.where((branch) {
-                            return branch.name.toLowerCase().contains(value.toLowerCase()) || branch.code.toLowerCase().contains(value.toLowerCase());
+                            return branch.name
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()) ||
+                                branch.code
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase());
                           }).toList();
                         }
                       });
@@ -545,50 +590,73 @@ class _MenuScreenState extends State<MenuScreen> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.search_off, size: 48, color: Colors.grey.shade300),
+                                Icon(Icons.search_off,
+                                    size: 48, color: Colors.grey.shade300),
                                 const SizedBox(height: 8),
-                                Text('ไม่พบสาขาที่ค้นหา', style: TextStyle(color: Colors.grey.shade500)),
+                                Text('ไม่พบสาขาที่ค้นหา',
+                                    style:
+                                        TextStyle(color: Colors.grey.shade500)),
                               ],
                             ),
                           )
                         : ListView.separated(
                             itemCount: filteredList.length,
-                            separatorBuilder: (context, index) => const SizedBox(height: 8),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
                             itemBuilder: (context, index) {
                               final branch = filteredList[index];
-                              final isSelected = branch.code == global.branchCode;
+                              final isSelected =
+                                  branch.code == global.branchCode;
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: isSelected ? const Color(0xFF3B82F6).withOpacity(0.1) : Colors.grey.shade50,
+                                  color: isSelected
+                                      ? const Color(0xFF3B82F6).withOpacity(0.1)
+                                      : Colors.grey.shade50,
                                   borderRadius: BorderRadius.circular(12),
-                                  border: isSelected ? Border.all(color: const Color(0xFF3B82F6)) : null,
+                                  border: isSelected
+                                      ? Border.all(
+                                          color: const Color(0xFF3B82F6))
+                                      : null,
                                 ),
                                 child: ListTile(
                                   dense: true,
                                   leading: Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: isSelected ? const Color(0xFF3B82F6) : Colors.grey.shade200,
+                                      color: isSelected
+                                          ? const Color(0xFF3B82F6)
+                                          : Colors.grey.shade200,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
                                       Icons.business_outlined,
-                                      color: isSelected ? Colors.white : Colors.grey.shade600,
+                                      color: isSelected
+                                          ? Colors.white
+                                          : Colors.grey.shade600,
                                       size: 20,
                                     ),
                                   ),
                                   title: Text(
                                     branch.name,
                                     style: TextStyle(
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                      color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
+                                      fontWeight: isSelected
+                                          ? FontWeight.bold
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? const Color(0xFF3B82F6)
+                                          : const Color(0xFF1E293B),
                                     ),
                                   ),
                                   subtitle: Text(
                                     branch.code,
-                                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade500),
                                   ),
-                                  trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFF3B82F6)) : null,
+                                  trailing: isSelected
+                                      ? const Icon(Icons.check_circle,
+                                          color: Color(0xFF3B82F6))
+                                      : null,
                                   onTap: () async {
                                     await global.saveConfigToPrefs(
                                       branchcode: branch.code,
@@ -598,8 +666,10 @@ class _MenuScreenState extends State<MenuScreen> {
                                     setState(() {}); // Refresh UI
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text('เปลี่ยนสาขาเป็น ${branch.name} แล้ว'),
-                                        backgroundColor: const Color(0xFF10B981),
+                                        content: Text(
+                                            'เปลี่ยนสาขาเป็น ${branch.name} แล้ว'),
+                                        backgroundColor:
+                                            const Color(0xFF10B981),
                                       ),
                                     );
                                   },
@@ -614,7 +684,8 @@ class _MenuScreenState extends State<MenuScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('ปิด', style: TextStyle(color: Colors.grey.shade600)),
+                child:
+                    Text('ปิด', style: TextStyle(color: Colors.grey.shade600)),
               ),
             ],
           );
