@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,10 +19,13 @@ class TransferCartListScreen extends StatefulWidget {
 
 class _TransferCartListScreenState extends State<TransferCartListScreen> {
   final WebServiceRepository _webServiceRepository = WebServiceRepository();
+  final TextEditingController _searchController = TextEditingController();
   List<CartModel> carts = [];
   List<bool> checked = [];
   bool showCheckbox = false;
   bool _isLoading = false;
+  Timer? _searchDebounce;
+  String _searchQuery = '';
   int transFlag = 2;
 
   @override
@@ -29,13 +34,21 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
     super.initState();
   }
 
-  void getCartList() async {
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getCartList() async {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
 
-    await _webServiceRepository.getCartList(transFlag).then((value) {
+    await _webServiceRepository.getCartList(transFlag, search: _searchQuery.trim()).then((value) {
+      if (!mounted) return;
       if (value.success) {
         setState(() {
           carts = (value.data as List).map((data) => CartModel.fromJson(data)).toList();
@@ -54,6 +67,7 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
         );
       }
     }).onError((error, stackTrace) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -64,6 +78,29 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
         ),
       );
     });
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value;
+    });
+
+    if (_searchDebounce?.isActive ?? false) {
+      _searchDebounce?.cancel();
+    }
+
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      getCartList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchDebounce?.cancel();
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+    });
+    getCartList();
   }
 
   String formatTime(String timeString) {
@@ -182,6 +219,8 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
               ),
             ),
 
+            _buildSearchBar(),
+
             // Cart List
             Expanded(
               child: _isLoading
@@ -256,6 +295,37 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
     );
   }
 
+  Widget _buildSearchBar() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: _onSearchChanged,
+        onSubmitted: (_) {
+          _searchDebounce?.cancel();
+          getCartList();
+        },
+        decoration: InputDecoration(
+          hintText: 'ค้นหาเลขที่เอกสาร, ผู้สร้าง, หมายเหตุ',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  onPressed: _clearSearch,
+                  icon: const Icon(Icons.clear),
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -264,7 +334,7 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
           Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           Text(
-            'ยังไม่มีตะกร้าโอนสินค้า',
+            _searchQuery.isEmpty ? 'ยังไม่มีตะกร้าโอนสินค้า' : 'ไม่พบข้อมูลที่ค้นหา',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade500,
@@ -272,7 +342,7 @@ class _TransferCartListScreenState extends State<TransferCartListScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'กดปุ่ม "สร้างตะกร้าใหม่" เพื่อเริ่มต้น',
+            _searchQuery.isEmpty ? 'กดปุ่ม "สร้างตะกร้าใหม่" เพื่อเริ่มต้น' : 'ลองค้นหาด้วยเลขที่เอกสาร, ผู้สร้าง หรือหมายเหตุ',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade400,

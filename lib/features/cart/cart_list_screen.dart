@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobilestock/features/cart/cart_detail_screen.dart';
@@ -16,10 +18,13 @@ class CartListScreen extends StatefulWidget {
 
 class _CartListScreenState extends State<CartListScreen> {
   final WebServiceRepository _webServiceRepository = WebServiceRepository();
+  final TextEditingController _searchController = TextEditingController();
   List<CartModel> carts = [];
   List<bool> checked = [];
   bool showCheckbox = false;
   bool _isLoading = false;
+  Timer? _searchDebounce;
+  String _searchQuery = '';
   int transflag = 0;
 
   @override
@@ -28,12 +33,21 @@ class _CartListScreenState extends State<CartListScreen> {
     super.initState();
   }
 
-  void getCartList() async {
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> getCartList() async {
+    if (!mounted) return;
     setState(() {
       _isLoading = true;
     });
 
-    await _webServiceRepository.getCartList(transflag).then((value) {
+    await _webServiceRepository.getCartList(transflag, search: _searchQuery.trim()).then((value) {
+      if (!mounted) return;
       if (value.success) {
         setState(() {
           carts = (value.data as List).map((data) => CartModel.fromJson(data)).toList();
@@ -52,6 +66,7 @@ class _CartListScreenState extends State<CartListScreen> {
         );
       }
     }).onError((error, stackTrace) {
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -62,6 +77,29 @@ class _CartListScreenState extends State<CartListScreen> {
         ),
       );
     });
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value;
+    });
+
+    if (_searchDebounce?.isActive ?? false) {
+      _searchDebounce?.cancel();
+    }
+
+    _searchDebounce = Timer(const Duration(milliseconds: 500), () {
+      getCartList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchDebounce?.cancel();
+    _searchController.clear();
+    setState(() {
+      _searchQuery = '';
+    });
+    getCartList();
   }
 
   String formatTime(String timeString) {
@@ -180,6 +218,8 @@ class _CartListScreenState extends State<CartListScreen> {
               ),
             ),
 
+            _buildSearchBar(),
+
             // Cart List
             Expanded(
               child: _isLoading
@@ -254,6 +294,37 @@ class _CartListScreenState extends State<CartListScreen> {
     );
   }
 
+  Widget _buildSearchBar() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: _onSearchChanged,
+        onSubmitted: (_) {
+          _searchDebounce?.cancel();
+          getCartList();
+        },
+        decoration: InputDecoration(
+          hintText: 'ค้นหาเลขที่เอกสาร, ผู้สร้าง, หมายเหตุ',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  onPressed: _clearSearch,
+                  icon: const Icon(Icons.clear),
+                )
+              : null,
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+      ),
+    );
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -262,7 +333,7 @@ class _CartListScreenState extends State<CartListScreen> {
           Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey.shade300),
           const SizedBox(height: 16),
           Text(
-            'ยังไม่มีตะกร้าตรวจนับ',
+            _searchQuery.isEmpty ? 'ยังไม่มีตะกร้าตรวจนับ' : 'ไม่พบข้อมูลที่ค้นหา',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey.shade500,
@@ -270,7 +341,7 @@ class _CartListScreenState extends State<CartListScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'กดปุ่ม "สร้างตะกร้าใหม่" เพื่อเริ่มต้น',
+            _searchQuery.isEmpty ? 'กดปุ่ม "สร้างตะกร้าใหม่" เพื่อเริ่มต้น' : 'ลองค้นหาด้วยเลขที่เอกสาร, ผู้สร้าง หรือหมายเหตุ',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade400,
