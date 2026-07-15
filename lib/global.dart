@@ -13,6 +13,7 @@ String userCode = "";
 String userName = "";
 String branchCode = "";
 String branchName = "";
+String lastRoute = "/menu";
 
 // Permissions
 bool permStockList = false;
@@ -80,6 +81,7 @@ Future<void> loadConfigFromPrefs() async {
   userName = prefs.getString("username") ?? "";
   branchCode = prefs.getString("branchcode") ?? "";
   branchName = prefs.getString("branchname") ?? "";
+  lastRoute = prefs.getString("last_route") ?? "/menu";
 }
 
 // บันทึกค่า config ลง SharedPreferences
@@ -123,6 +125,25 @@ Future<void> saveConfigToPrefs({
   }
 }
 
+Future<void> saveLastRoute(String route) async {
+  final validRoutes = {
+    '/menu',
+    '/cartlist',
+    '/stockdetail',
+    '/requestcartlist',
+    '/transfercartlist',
+    '/handheldcartlist',
+    '/barcodemanage',
+    '/permission',
+    '/pricepermission',
+  };
+  if (!validRoutes.contains(route)) return;
+
+  final prefs = await _getPrefs();
+  await prefs.setString("last_route", route);
+  lastRoute = route;
+}
+
 // ล้างค่า user (สำหรับ logout)
 Future<void> clearUserData() async {
   final prefs = await _getPrefs();
@@ -130,10 +151,12 @@ Future<void> clearUserData() async {
   await prefs.remove("username");
   await prefs.remove("branchcode");
   await prefs.remove("branchname");
+  await prefs.remove("last_route");
   userCode = "";
   userName = "";
   branchCode = "";
   branchName = "";
+  lastRoute = "/menu";
 }
 
 // เก็บไว้เพื่อ backward compatibility กับโค้ดเดิม

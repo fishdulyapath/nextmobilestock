@@ -27,16 +27,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLogin() async {
-    final isLoggedIn = global.userCode.isNotEmpty &&
+    await global.loadConfigFromPrefs();
+
+    final hasSession = global.userCode.isNotEmpty &&
         global.userName.isNotEmpty &&
         global.serverDatabase.isNotEmpty &&
-        global.serverProvider.isNotEmpty &&
-        global.branchCode.isNotEmpty;
+        global.serverProvider.isNotEmpty;
 
-    if (!isLoggedIn) {
-      if (mounted)
+    if (!hasSession) {
+      if (mounted) {
         Navigator.of(context)
             .pushNamedAndRemoveUntil('/login', (route) => false);
+      }
       return;
     }
 
@@ -76,7 +78,9 @@ class _SplashScreenState extends State<SplashScreen> {
       '/permission',
       '/pricepermission',
     };
-    final target = validRoutes.contains(fragment) ? fragment : '/menu';
+    final savedRoute =
+        validRoutes.contains(global.lastRoute) ? global.lastRoute : '/menu';
+    final target = validRoutes.contains(fragment) ? fragment : savedRoute;
 
     // ตรวจสอบสิทธิ์ของ route ที่ต้องการเข้า
     final routePermMap = {
